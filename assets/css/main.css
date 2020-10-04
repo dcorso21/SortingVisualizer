@@ -1,0 +1,22 @@
+.body{
+    height: 100vh;
+    width: 100vw;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.arr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 300%;
+    height: 100vh;
+}
+
+
+.num {
+    font-style: italic;
+    padding: 20px;
+}
+
