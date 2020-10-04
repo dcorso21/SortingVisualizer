@@ -17,6 +17,13 @@
 
 .num {
     font-style: italic;
-    padding: 20px;
+    text-align: center;
+    /* line-height: center; */
+    height: 50px;
+    width: 50px;
+    margin: 20px;
+    border-radius: 50%;
+    /* background-color: #6fbd9600; */
+    /* background-color: #6fbd96; */
 }
 
