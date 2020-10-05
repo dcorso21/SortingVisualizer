@@ -27,3 +27,6 @@
     /* background-color: #6fbd96; */
 }
 
+.hide-while-dragged {
+    transform: translateX(-9999px);
+}
