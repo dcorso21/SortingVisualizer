@@ -164,9 +164,8 @@ nums.map((num) => {
 
         for (let i = 0; i < Anums.length; i++) {
             if (i === 0) {
-                xdist = -89;
-                // xdist = getRelativeX(toAnimate[i], dragVal) + 10000;
-                if (gap > hovering) {
+                xdist = getRelativeX(numOrd[1], numOrd[0]);
+                if (backwards) {
                     xdist *= -1;
                 }
             }
