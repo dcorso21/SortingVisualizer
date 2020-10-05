@@ -5,7 +5,7 @@ window.onload = () => {
     // firstScan();
     // moveE1(num4, num2);
     // moveE2(num4, num2);
-    endScan();
+    // endScan();
 };
 
 function firstScan() {
@@ -96,6 +96,7 @@ nums.map((num) => {
 
     num.ondragover = (e) => {
         if (!dragapprove) return;
+        if (dragVal === e.target) return;
         dragapprove = false;
         e.preventDefault();
         let nodes = e.path[1].childNodes,
@@ -107,54 +108,93 @@ nums.map((num) => {
             }
         }
 
-        let gap = numOrd.indexOf(dragVal) + 1,
-            hovering = numOrd.indexOf(e.target) + 1,
-            before = gap === 1 ? [] : numOrd.slice(0, Math.min(gap, hovering)),
-            toAnimate = numOrd.slice(
-                Math.min(gap, hovering),
-                Math.max(gap, hovering)
-            ),
-            after =
-                gap === numOrd.length
-                    ? []
-                    : numOrd.slice(Math.max(gap, hovering)),
-            xdist;
+        let gap = numOrd.indexOf(dragVal),
+            hovering = numOrd.indexOf(e.target),
+            backwards = gap > hovering;
 
-        // console.log("b", before, "anim", toAnimate, "a", after);
+        // console.log(gap, hovering);
+        // if (!backwards) {
+        //     gap++;
+        //     hovering++;
+        // }
 
-        for (let i = 0; i < toAnimate.length; i++) {
+        let Anums = [e.target],
+            numToAnim = Math.abs(gap - hovering) - 1;
+
+        if (numToAnim > 0) {
+            for (let i = 0; i < numToAnim; i++) {
+                let index;
+                index = backwards ? hovering - i : hovering + i;
+                if (index === gap) continue;
+                Anums.push(numOrd[index]);
+            }
+        }
+        let bf = [],
+            af = [],
+            newArray;
+
+        // Finding Static Elements
+        for (let i = 0; i < numOrd.length; i++) {
+            if (i === gap || i === hovering) continue;
+            else if (i < Math.min(gap, hovering)) {
+                bf.push(numOrd[i]);
+            } else if (i > Math.max(gap, hovering)) {
+                af.push(numOrd[i]);
+            } else continue;
+        }
+
+        // console.log("before", bf);
+        // console.log("anim", Anums);
+        // console.log("after", af);
+        // Compose Array
+        if (backwards) {
+            bf.push(dragVal);
+            newArray = bf.concat(Anums);
+        } else {
+            newArray = bf.concat(Anums);
+            newArray.push(dragVal);
+        }
+        newArray = newArray.concat(af);
+
+        console.log("New" , newArray);
+
+
+        let xdist;
+
+        for (let i = 0; i < Anums.length; i++) {
             if (i === 0) {
-                xdist = getRelativeX(toAnimate[i], dragVal) + 10000;
+                xdist = -89;
+                // xdist = getRelativeX(toAnimate[i], dragVal) + 10000;
+                if (gap > hovering) {
+                    xdist *= -1;
+                }
             }
             anime({
-                targets: toAnimate[i],
+                targets: Anums[i],
                 translateX: xdist,
                 duration: 175,
                 easing: "easeOutElastic(1, .8)",
             });
         }
-        let newArray = before.concat(toAnimate);
-        newArray.push(dragVal);
-        newArray = newArray.concat(after);
+
         setTimeout(() => {
             newArray.map((el) => {
                 if (el !== dragVal) {
-                    el.style.transform = "none";
+                    el.style.transform = "translateX(0)";
                 }
             });
             let arr = e.path[1];
-            while (arr.firstChild){
-                arr.removeChild(arr.firstChild)
+            while (arr.firstChild) {
+                arr.removeChild(arr.firstChild);
             }
 
-            newArray.unshift(brackets[0])
-            newArray.push(brackets[1])
-            
+            newArray.unshift(brackets[0]);
+            newArray.push(brackets[1]);
+
             newArray.map((el) => {
-                arr.appendChild(el)
-            })
-            dragapprove = true
-            // console.log(newArray);
+                arr.appendChild(el);
+            });
+            dragapprove = true;
         }, 200);
     };
     num.ondrop = (e) => {
