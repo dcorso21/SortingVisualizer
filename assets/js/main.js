@@ -83,18 +83,26 @@ let dragVal,
     dragapprove = true;
 nums.map((num) => {
     num.ondragstart = (e) => {
-        // let arr = document.getElementsByClassName("arr")[0];
-        requestAnimationFrame(() => {
-            e.target.classList.add("hide-while-dragged");
-            // e.dataTransfer.setData("text", e.target.id)
+        // e.preventDefault();
+        let img = e.target.cloneNode(true);
+        img.classList.add("drag-num");
+        img.id = "tempDrag"
+        document.body.appendChild(img)
+        e.dataTransfer.setDragImage(img, 25, 25);
+        requestAnimationFrame(() => {                
+            img.style.opacity = "0",
+            e.target.style.opacity = "0"
             dragVal = e.target;
         });
     };
     num.ondragend = (e) => {
-        e.srcElement.classList.remove("hide-while-dragged");
+        e.preventDefault();
+        e.target.style.opacity = "100%";
+        document.body.removeChild(document.getElementById("tempDrag"));
     };
 
     num.ondragover = (e) => {
+        e.stopPropagation();
         if (!dragapprove) return;
         if (dragVal === e.target) return;
         dragapprove = false;
@@ -112,26 +120,25 @@ nums.map((num) => {
             hovering = numOrd.indexOf(e.target),
             backwards = gap > hovering;
 
-        // console.log(gap, hovering);
-        // if (!backwards) {
-        //     gap++;
-        //     hovering++;
-        // }
-
-        let Anums = [e.target],
+        let Anums = [],
             numToAnim = Math.abs(gap - hovering) - 1;
 
-        if (numToAnim > 0) {
-            for (let i = 0; i < numToAnim; i++) {
-                let index;
-                index = backwards ? hovering - i : hovering + i;
-                if (index === gap) continue;
-                Anums.push(numOrd[index]);
-            }
+        console.log(numToAnim);
+
+        while (numToAnim !== 0){
+            if (backwards) {
+                Anums.unshift(numOrd[hovering + numToAnim]) ;
+            } else {
+                Anums.push(numOrd[hovering - numToAnim]) ;
+            } 
+            numToAnim--
         }
+
+        backwards ? Anums.unshift(e.target): Anums.push(e.target)
+        console.log(Anums);
         let bf = [],
-            af = [],
-            newArray;
+        af = [],
+        newArray;
 
         // Finding Static Elements
         for (let i = 0; i < numOrd.length; i++) {
@@ -143,10 +150,6 @@ nums.map((num) => {
             } else continue;
         }
 
-        // console.log("before", bf);
-        // console.log("anim", Anums);
-        // console.log("after", af);
-        // Compose Array
         if (backwards) {
             bf.push(dragVal);
             newArray = bf.concat(Anums);
@@ -156,10 +159,8 @@ nums.map((num) => {
         }
         newArray = newArray.concat(af);
 
-        console.log("New" , newArray);
-
-
         let xdist;
+
 
         for (let i = 0; i < Anums.length; i++) {
             if (i === 0) {
@@ -180,7 +181,7 @@ nums.map((num) => {
         setTimeout(() => {
             newArray.map((el) => {
                 if (el !== dragVal) {
-                    el.style.transform = "translateX(0)";
+                    el.style.transform = "none";
                 }
             });
             let arr = e.path[1];
