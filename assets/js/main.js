@@ -7,6 +7,7 @@ let [num1, num4, num3, num2] = document.querySelectorAll(".num"),
 
 window.onload = () => {
     enableDragNumbers();
+    scan();
 
     // firstScan();
     // moveE1(num4, num2);
@@ -16,11 +17,42 @@ window.onload = () => {
 
 function scan() {
     let arrNodes = getCurrentArrOrdered();
-    arr = getNodeValues(arrNodes);
-    let [sortedArr, aniFrames] = bubbleSort(arr);
-    // console.log(sortedArr);
-    return sortedArr;
+    origArr = getNodeValues(arrNodes);
+    let [sortedArr, aniFrames] = bubbleSort(origArr),
+        delay = 0;
+    aniFrames.map((frame) => {
+        actions = {
+            compare: animateCompare,
+            swap: animateSwap,
+        }
+        actions[frame.action](frame.elements, arrNodes, origArr, sortedArr, delay)
+        delay += 850;
+    })
 }
+
+
+function animateCompare(elements, arrNodes, origArr, sortedArr, delay) {
+    console.log(elements);
+    elements.map((el, i)=>{
+        tl.add({
+            targets: arrNodes[el],
+            keyframes: [
+                { backgroundColor: "#96d5e8" },
+                { backgroundColor: "#fff" },
+            ],
+            duration: 800,
+            easing: "linear",
+            // direction: "alternate",
+            delay: delay,
+        });
+    })
+}
+
+function animateSwap(elements) {
+    
+}
+
+
 
 function getNodeValues(nodeList) {
     let vals = [];
@@ -39,6 +71,7 @@ function bubbleSort(arr) {
         let changed = false;
 
         values.map((n, i) => {
+            if (i === values.length - 1) return;
             frameList.push({
                 action: "compare",
                 elements: [i, i + 1],
@@ -59,7 +92,7 @@ function bubbleSort(arr) {
     while (stillWorking) {
         [arr, stillWorking, aniFrames] = swapBubble(arr, aniFrames);
     }
-    return arr, aniFrames;
+    return [arr, aniFrames];
     // for (let i = 0; i < seq.length; i++) {
     //     let color = [1, 3].includes(i) ? "#ea9797" : "#afea97";
     //     tl.add({
