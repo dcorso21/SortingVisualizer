@@ -1,13 +1,14 @@
 let [num1, num4, num3, num2] = document.querySelectorAll(".num"),
-    tl = anime.timeline(),
+    tl,
     nums = [...document.getElementsByClassName("num")],
+    arrDiv = document.getElementsByClassName("arr")[0],
     brackets = document.querySelectorAll(".bracket"),
     dragVal,
     dragapprove = true;
 
 window.onload = () => {
     enableDragNumbers();
-    scan();
+    // scan();
 
     // firstScan();
     // moveE1(num4, num2);
@@ -17,42 +18,109 @@ window.onload = () => {
 
 function scan() {
     let arrNodes = getCurrentArrOrdered();
+    tl = anime.timeline();
     origArr = getNodeValues(arrNodes);
-    let [sortedArr, aniFrames] = bubbleSort(origArr),
-        delay = 0;
+    let [sortedArr, aniFrames] = bubbleSort(origArr);
+    // return;
     aniFrames.map((frame) => {
         actions = {
             compare: animateCompare,
             swap: animateSwap,
+            solved: animateSolved,
+        };
+        arrNodes = actions[frame.action](frame, arrNodes);
+        if (frame.action == "swap") {
         }
-        actions[frame.action](frame.elements, arrNodes, origArr, sortedArr, delay)
-        delay += 850;
-    })
+    });
 }
 
-
-function animateCompare(elements, arrNodes, origArr, sortedArr, delay) {
-    console.log(elements);
-    elements.map((el, i)=>{
-        tl.add({
-            targets: arrNodes[el],
-            keyframes: [
-                { backgroundColor: "#96d5e8" },
-                { backgroundColor: "#fff" },
-            ],
-            duration: 800,
-            easing: "linear",
-            // direction: "alternate",
-            delay: delay,
-        });
-    })
+function animateCompare(frame, arrNodes) {
+    let nodes = [arrNodes[frame.elements[0]], arrNodes[frame.elements[1]]];
+    tl.add({
+        targets: arrNodes,
+        keyframes: [{ backgroundColor: "#fff" }],
+        duration: 400,
+        easing: "linear",
+    });
+    tl.add({
+        targets: nodes,
+        keyframes: [{ backgroundColor: "#96d5e8" }],
+        duration: 400,
+        easing: "linear",
+    });
+    return arrNodes;
 }
 
-function animateSwap(elements) {
-    
+function animateSwap(frame, arrNodes) {
+    let nodes = [arrNodes[frame.elements[0]], arrNodes[frame.elements[1]]],
+        lastNodes = arrNodes.slice(),
+        xdist = getRelativeX(arrNodes[0], arrNodes[1]);
+        // xdist = 89;
+
+    tl.add({
+        targets: nodes,
+        keyframes: [
+            { backgroundColor: "#e07474", duration: 400 },
+            { backgroundColor: "#fff", duration: 900 },
+        ],
+        easing: "linear",
+    });
+
+    moveE1(nodes[0], xdist);
+    moveE2(nodes[1], xdist, update);
+
+    function swapPositions([posA, posB], arrNodes) {
+        let b = arrNodes[posB];
+        arrNodes[posB] = arrNodes[posA];
+        arrNodes[posA] = b;
+        return arrNodes;
+    }
+
+    function update() {
+        let swapped = swapPositions(frame.elements, lastNodes);
+        updateArr(arrDiv, swapped);
+    }
+    return swapPositions(frame.elements, arrNodes);
 }
 
+function animateSolved(frame, arrNodes) {
+    tl.add({
+        targets: arrNodes,
+        keyframes: [
+            // { backgroundColor: "#96d5e8" },
+            { backgroundColor: "#fff" },
+        ],
+        duration: 400,
+        easing: "linear",
+    });
+    tl.add({
+        targets: arrNodes,
+        keyframes: [
+            { backgroundColor: "#74e098" },
+            // { backgroundColor: "#fff" },
+        ],
+        duration: 400,
+        easing: "linear",
+        delay: anime.stagger(100),
+    });
+    return arrNodes;
+}
 
+function arrFromInnerHTML(nodeList, HTMLvals) {
+    let newArr = [];
+    HTMLvals.map((v) => {
+        // console.log(v);
+        for (let i = 0; i < nodeList.length; i++) {
+            if (Number(nodeList[i].innerHTML) == v) {
+                newArr.push(nodeList[i]);
+                console.log(newArr);
+                nodeList.splice(i, 1);
+                break;
+            }
+        }
+    });
+    return newArr;
+}
 
 function getNodeValues(nodeList) {
     let vals = [];
@@ -63,7 +131,6 @@ function getNodeValues(nodeList) {
 }
 
 function bubbleSort(arr) {
-    // let arr = getCurrentArrOrdered(),
     let stillWorking = true,
         aniFrames = [];
 
@@ -83,6 +150,7 @@ function bubbleSort(arr) {
                 frameList.push({
                     action: "swap",
                     elements: [i, i + 1],
+                    resultArr: values,
                 });
             }
         });
@@ -92,20 +160,8 @@ function bubbleSort(arr) {
     while (stillWorking) {
         [arr, stillWorking, aniFrames] = swapBubble(arr, aniFrames);
     }
+    aniFrames.push({ action: "solved" });
     return [arr, aniFrames];
-    // for (let i = 0; i < seq.length; i++) {
-    //     let color = [1, 3].includes(i) ? "#ea9797" : "#afea97";
-    //     tl.add({
-    //         targets: seq[i],
-    //         keyframes: [
-    //             { backgroundColor: color },
-    //             { backgroundColor: "#fff" },
-    //         ],
-    //         duration: 700,
-    //         easing: "linear",
-    //         direction: "alternate",
-    //     });
-    // }
 }
 
 function endScan() {
@@ -130,12 +186,12 @@ function getRelativeX(targetElement, movingElement) {
 // Scan list of numbers
 // Switch Numbers
 // Scan again
-function moveE1(e1, e2) {
+function moveE1(e1, xdist) {
     tl.add({
         targets: e1,
         keyframes: [
             { translateY: -40 },
-            { translateX: getRelativeX(e1, e2) },
+            { translateX: xdist },
             { translateY: 0 },
         ],
         duration: 2500,
@@ -143,17 +199,18 @@ function moveE1(e1, e2) {
     });
 }
 
-function moveE2(e1, e2) {
+function moveE2(e2, xdist, changeComplete) {
     tl.add(
         {
             targets: e2,
             keyframes: [
                 { translateY: 40 },
-                { translateX: getRelativeX(e2, e1) },
+                { translateX: xdist * -1 },
                 { translateY: 0 },
             ],
             duration: 2500,
             easing: "easeOutElastic(1, .8)",
+            changeComplete: changeComplete,
         },
         "-=2500"
     );
@@ -166,6 +223,7 @@ function enableDragNumbers() {
             let img = e.target.cloneNode(true);
             img.classList.add("drag-num");
             img.id = "tempDrag";
+            img.style.backgroundColor = "ffffff00";
             document.body.appendChild(img);
             e.dataTransfer.setDragImage(img, 25, 25);
             requestAnimationFrame(() => {
@@ -237,15 +295,13 @@ function enableDragNumbers() {
                     translateX: xdist,
                     duration: 175,
                     easing: "easeOutElastic(1, .8)",
+                    complete: () => {
+                        let arr = e.path[1];
+                        updateArr(arr, newArray);
+                        dragapprove = true; // this function can now be called again
+                    },
                 });
             });
-
-            // Update the Array
-            setTimeout(() => {
-                let arr = e.path[1];
-                updateArr(arr, newArray);
-                dragapprove = true; // this function can now be called again
-            }, 200);
         };
         num.ondrop = (e) => {
             e.preventDefault();
@@ -254,6 +310,7 @@ function enableDragNumbers() {
 }
 
 function updateArr(arr, newValues) {
+    arr = removeAllChildNodes(arr);
     newValues.unshift(brackets[0]);
     newValues.push(brackets[1]);
     newValues.map((el) => {
@@ -279,4 +336,12 @@ function getCurrentArrOrdered() {
         }
     });
     return ordered;
+}
+
+function constructNewArr(indexes, arrNodes) {
+    let newArr = [];
+    indexes.map((ind) => {
+        newArr.push(arrNodes[ind]);
+    });
+    return newArr;
 }
