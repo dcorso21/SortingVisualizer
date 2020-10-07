@@ -17,17 +17,20 @@ window.onload = () => {
 };
 
 function scan() {
+    dragapprove = false;
     tl = anime.timeline();
     currentNodeArr = getCurrentArrOrdered();
     xd = getRelativeX(currentNodeArr[0], currentNodeArr[1]);
     arrVals = getNodeValues(currentNodeArr);
-    let [sortedArr, aniFrames] = bubbleSort(arrVals),
+    // let [sortedArr, aniFrames] = bubbleSort(arrVals),
+    let [sortedArr, aniFrames] = selectionSort(arrVals),
         primaryValues = currentNodeArr.slice();
     aniFrames.map((frame) => {
         actions = {
             compare: animateCompare,
             swap: animateSwap,
             solved: animateSolved,
+            partition: animatePartition,
         };
         currentNodeArr = actions[frame.action](frame);
     });
@@ -36,6 +39,8 @@ function scan() {
 
 function animateCompare(frame) {
     let save = arrFromInnerHTML(currentNodeArr, frame.values);
+    // console.log(frame.elements);
+    // let save = [currentNodeArr[frame.elements[0]], currentNodeArr[frame.elements[1]]]
     tl.add({
         targets: currentNodeArr,
         keyframes: [{ backgroundColor: "#fff" }],
@@ -43,11 +48,75 @@ function animateCompare(frame) {
         easing: "linear",
     });
     tl.add({
-        targets: [save[0], save[1]],
+        targets: save,
         keyframes: [{ backgroundColor: "#96d5e8" }],
         duration: 400,
         easing: "linear",
     });
+    return currentNodeArr;
+}
+
+function animatePartition(frame) {
+    let nudge = frame.index,
+    toNudge = [],
+    moving = currentNodeArr.slice()[frame.element],
+    after = currentNodeArr.slice(frame.element, currentNodeArr.length)
+    while (nudge !== frame.element) {
+        toNudge.push(nudge);
+        nudge++;
+    }
+    toNudge.map((v, i) => {
+        toNudge[i] = currentNodeArr[v];
+    });
+    
+    resetAnimX();
+    tl.add({
+        targets: currentNodeArr[frame.element],
+        keyframes: [
+            // { translateX: 0 },
+            { translateY: -40 },
+            {
+                translateX:
+                    -1 *
+                    getRelativeX(
+                        currentNodeArr[frame.index],
+                        currentNodeArr[frame.element]
+                    ),
+            },
+            { translateY: 0 },
+        ],
+        duration: 900,
+        easing: "easeOutElastic(1, .8)",
+    });
+    tl.add(
+        {
+            targets: toNudge,
+            keyframes: [
+                {
+                    translateX: getRelativeX(
+                        currentNodeArr[0],
+                        currentNodeArr[1]
+                    ),
+                },
+            ],
+            duration: 900,
+            easing: "easeOutElastic(1, .8)",
+            delay: anime.stagger(100),
+            changeComplete: () => {partAndSlice(), refreshArrDiv()},
+        },
+        "-=800"
+    );
+    function partAndSlice() {
+        currentNodeArr = currentNodeArr.slice(0, frame.index);
+        console.log("bf", currentNodeArr);
+        currentNodeArr.push(moving);
+        console.log("el", currentNodeArr);
+        currentNodeArr = currentNodeArr.concat(toNudge);
+        currentNodeArr = currentNodeArr.concat(after);
+        console.log("after", currentNodeArr);
+        // refreshArrDiv();
+    }
+    partAndSlice();
     return currentNodeArr;
 }
 
@@ -62,7 +131,7 @@ function animateSwap(frame) {
         easing: "linear",
     });
 
-    resetAnimX(save)
+    resetAnimX();
     syncSwitchAnimate(save, frame.xdMult, update);
     // moveE2(save, frame.xdMult, update);
 
@@ -93,6 +162,9 @@ function animateSolved(frame) {
         duration: 400,
         easing: "linear",
         delay: anime.stagger(100),
+        complete: () => {
+            dragapprove = true;
+        },
     });
     return currentNodeArr;
 }
@@ -159,6 +231,50 @@ function bubbleSort(arr) {
     return [arr, aniFrames];
 }
 
+function selectionSort(arr) {
+    let stillWorking = true,
+        aniFrames = [];
+
+    function reduceToMin(fullArray, startIndex, frameList) {
+        let currentMin = 0,
+            toSort = fullArray.slice(startIndex),
+            sorted = fullArray.slice(0, startIndex);
+
+        toSort.map((v, i) => {
+            frameList.push({
+                action: "compare",
+                elements: [currentMin + startIndex, i + startIndex],
+                values: [toSort[currentMin], toSort[i]],
+            });
+            if (toSort[currentMin] > toSort[i]) {
+                currentMin = i;
+            }
+        });
+
+        if (currentMin !== 0){
+            frameList.push({
+                action: "partition",
+                element: currentMin + startIndex,
+                index: startIndex,
+            });
+        }
+
+        let pull = toSort[currentMin],
+            moreToSort = toSort.length !== 1;
+        toSort.splice(currentMin, 1);
+        toSort.unshift(pull);
+        fullArray = sorted.concat(toSort);
+
+        return [fullArray, moreToSort, frameList];
+    }
+
+    for (let i = 0; i < arr.length; i++) {
+        [arr, stillWorking, aniFrames] = reduceToMin(arr, i, aniFrames);
+    }
+    aniFrames.push({ action: "solved" });
+    return [arr, aniFrames];
+}
+
 function endScan() {
     tl.add({
         targets: [num1, num2, num3, num4],
@@ -172,6 +288,7 @@ function endScan() {
 }
 
 function getRelativeX(targetElement, movingElement) {
+    // console.log("see", currentNodeArr, targetElement, movingElement);
     return (
         movingElement.getBoundingClientRect().x -
         targetElement.getBoundingClientRect().x
@@ -214,13 +331,14 @@ function syncSwitchAnimate([e1, e2], xdMult, changeComplete) {
     );
 }
 
-function resetAnimX(nodes) {
-    nodes.map((n) => {
+function resetAnimX() {
+    currentNodeArr.map((n, i) => {
         tl.add({
             targets: n,
             translateX: 0,
             duration: 1,
             easing: "linear",
+            // , `-=${i*1}`
         });
     });
 }
@@ -371,5 +489,4 @@ function swapPositions([posA, posB]) {
     let b = currentNodeArr[posB];
     currentNodeArr[posB] = currentNodeArr[posA];
     currentNodeArr[posA] = b;
-    console.log("new cna", currentNodeArr);
 }
