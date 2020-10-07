@@ -1,15 +1,15 @@
-let [num1, num4, num3, num2] = document.querySelectorAll(".num"),
-    tl,
+let tl,
     nums = [...document.getElementsByClassName("num")],
     arrDiv = document.getElementsByClassName("arr")[0],
     brackets = document.querySelectorAll(".bracket"),
+    currentNodeArr,
+    xd,
     dragVal,
     dragapprove = true;
 
 window.onload = () => {
     enableDragNumbers();
     // scan();
-
     // firstScan();
     // moveE1(num4, num2);
     // moveE2(num4, num2);
@@ -17,75 +17,66 @@ window.onload = () => {
 };
 
 function scan() {
-    let arrNodes = getCurrentArrOrdered();
     tl = anime.timeline();
-    origArr = getNodeValues(arrNodes);
-    let [sortedArr, aniFrames] = bubbleSort(origArr);
-    // return;
+    currentNodeArr = getCurrentArrOrdered();
+    xd = getRelativeX(currentNodeArr[0], currentNodeArr[1]);
+    arrVals = getNodeValues(currentNodeArr);
+    let [sortedArr, aniFrames] = bubbleSort(arrVals),
+        primaryValues = currentNodeArr.slice();
     aniFrames.map((frame) => {
         actions = {
             compare: animateCompare,
             swap: animateSwap,
             solved: animateSolved,
         };
-        arrNodes = actions[frame.action](frame, arrNodes);
-        if (frame.action == "swap") {
-        }
+        currentNodeArr = actions[frame.action](frame);
     });
+    currentNodeArr = primaryValues.slice();
 }
 
-function animateCompare(frame, arrNodes) {
-    let nodes = [arrNodes[frame.elements[0]], arrNodes[frame.elements[1]]];
+function animateCompare(frame) {
+    let save = arrFromInnerHTML(currentNodeArr, frame.values);
     tl.add({
-        targets: arrNodes,
+        targets: currentNodeArr,
         keyframes: [{ backgroundColor: "#fff" }],
         duration: 400,
         easing: "linear",
     });
     tl.add({
-        targets: nodes,
+        targets: [save[0], save[1]],
         keyframes: [{ backgroundColor: "#96d5e8" }],
         duration: 400,
         easing: "linear",
     });
-    return arrNodes;
+    return currentNodeArr;
 }
 
-function animateSwap(frame, arrNodes) {
-    let nodes = [arrNodes[frame.elements[0]], arrNodes[frame.elements[1]]],
-        lastNodes = arrNodes.slice(),
-        xdist = getRelativeX(arrNodes[0], arrNodes[1]);
-        // xdist = 89;
-
+function animateSwap(frame) {
+    let save = arrFromInnerHTML(currentNodeArr, frame.values);
     tl.add({
-        targets: nodes,
+        targets: [save[0], save[1]],
         keyframes: [
-            { backgroundColor: "#e07474", duration: 400 },
-            { backgroundColor: "#fff", duration: 900 },
+            { backgroundColor: "#e07474", duration: 300 },
+            { backgroundColor: "#fff", duration: 300 },
         ],
         easing: "linear",
     });
 
-    moveE1(nodes[0], xdist);
-    moveE2(nodes[1], xdist, update);
-
-    function swapPositions([posA, posB], arrNodes) {
-        let b = arrNodes[posB];
-        arrNodes[posB] = arrNodes[posA];
-        arrNodes[posA] = b;
-        return arrNodes;
-    }
+    resetAnimX(save)
+    syncSwitchAnimate(save, frame.xdMult, update);
+    // moveE2(save, frame.xdMult, update);
 
     function update() {
-        let swapped = swapPositions(frame.elements, lastNodes);
-        updateArr(arrDiv, swapped);
+        swapPositions(frame.elements.slice());
+        refreshArrDiv();
     }
-    return swapPositions(frame.elements, arrNodes);
+    swapPositions(frame.elements.slice());
+    return currentNodeArr;
 }
 
-function animateSolved(frame, arrNodes) {
+function animateSolved(frame) {
     tl.add({
-        targets: arrNodes,
+        targets: currentNodeArr,
         keyframes: [
             // { backgroundColor: "#96d5e8" },
             { backgroundColor: "#fff" },
@@ -94,7 +85,7 @@ function animateSolved(frame, arrNodes) {
         easing: "linear",
     });
     tl.add({
-        targets: arrNodes,
+        targets: currentNodeArr,
         keyframes: [
             { backgroundColor: "#74e098" },
             // { backgroundColor: "#fff" },
@@ -103,18 +94,17 @@ function animateSolved(frame, arrNodes) {
         easing: "linear",
         delay: anime.stagger(100),
     });
-    return arrNodes;
+    return currentNodeArr;
 }
 
 function arrFromInnerHTML(nodeList, HTMLvals) {
     let newArr = [];
+    let throwaway = nodeList.slice();
     HTMLvals.map((v) => {
-        // console.log(v);
-        for (let i = 0; i < nodeList.length; i++) {
-            if (Number(nodeList[i].innerHTML) == v) {
-                newArr.push(nodeList[i]);
-                console.log(newArr);
-                nodeList.splice(i, 1);
+        for (let i = 0; i < throwaway.length; i++) {
+            if (Number(throwaway[i].innerHTML) == v) {
+                newArr.push(throwaway[i]);
+                throwaway.splice(i, 1);
                 break;
             }
         }
@@ -142,16 +132,21 @@ function bubbleSort(arr) {
             frameList.push({
                 action: "compare",
                 elements: [i, i + 1],
+                values: [values[i], values[i + 1]],
             });
             if (n > values[i + 1]) {
                 values[i] = values[i + 1];
                 values[i + 1] = n;
                 changed = true;
-                frameList.push({
+                let newFrame = {
                     action: "swap",
                     elements: [i, i + 1],
-                    resultArr: values,
-                });
+                    values: [values[i], values[i + 1]],
+                };
+                (newFrame.xdMult = Math.abs(
+                    newFrame.elements[0] - newFrame.elements[1]
+                )),
+                    frameList.push(newFrame);
             }
         });
         return [arr, changed, frameList];
@@ -186,34 +181,48 @@ function getRelativeX(targetElement, movingElement) {
 // Scan list of numbers
 // Switch Numbers
 // Scan again
-function moveE1(e1, xdist) {
+function syncSwitchAnimate([e1, e2], xdMult, changeComplete) {
     tl.add({
         targets: e1,
         keyframes: [
+            // { translateX: 0 },
             { translateY: -40 },
-            { translateX: xdist },
+            {
+                translateX: xd * xdMult * -1,
+            },
             { translateY: 0 },
         ],
-        duration: 2500,
+        duration: 900,
         easing: "easeOutElastic(1, .8)",
     });
-}
-
-function moveE2(e2, xdist, changeComplete) {
     tl.add(
         {
             targets: e2,
             keyframes: [
+                // { translateX: 0 },
                 { translateY: 40 },
-                { translateX: xdist * -1 },
+                {
+                    translateX: xd * xdMult,
+                },
                 { translateY: 0 },
             ],
-            duration: 2500,
+            duration: 900,
             easing: "easeOutElastic(1, .8)",
             changeComplete: changeComplete,
         },
-        "-=2500"
+        "-=800"
     );
+}
+
+function resetAnimX(nodes) {
+    nodes.map((n) => {
+        tl.add({
+            targets: n,
+            translateX: 0,
+            duration: 1,
+            easing: "linear",
+        });
+    });
 }
 
 function enableDragNumbers() {
@@ -318,6 +327,18 @@ function updateArr(arr, newValues) {
         arr.appendChild(el);
     });
 }
+function refreshArrDiv() {
+    arrDiv = removeAllChildNodes(arrDiv);
+    let values = currentNodeArr.slice();
+    // console.log("vals", values);
+    values.unshift(brackets[0]);
+    values.push(brackets[1]);
+    values.map((el) => {
+        el.style.transform = "translateX(0px)";
+        arrDiv.appendChild(el);
+    });
+    // console.log(arrDiv);
+}
 
 function removeAllChildNodes(parent) {
     while (parent.firstChild) {
@@ -344,4 +365,11 @@ function constructNewArr(indexes, arrNodes) {
         newArr.push(arrNodes[ind]);
     });
     return newArr;
+}
+
+function swapPositions([posA, posB]) {
+    let b = currentNodeArr[posB];
+    currentNodeArr[posB] = currentNodeArr[posA];
+    currentNodeArr[posA] = b;
+    console.log("new cna", currentNodeArr);
 }
