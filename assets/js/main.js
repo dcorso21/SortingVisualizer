@@ -61,7 +61,7 @@ function arrFromInnerHTML(nodeList, HTMLvals) {
 function getNodeValues(nodeList) {
     let vals = [];
     nodeList.map((node) => {
-        vals.push(node.innerHTML);
+        vals.push(Number(node.innerHTML));
     });
     return vals;
 }

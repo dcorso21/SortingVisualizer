@@ -116,7 +116,7 @@ class SortingAlgos {
             }
             sorted.push(v);
             sorted = sorted.concat(toRight);
-            console.log("sor", sorted);
+            // console.log("sor", sorted);
             if (v !== arr[arr.length - 1]) {
                 aniFrames.push({
                     action: "solved",
@@ -142,14 +142,13 @@ class SortingAlgos {
                     ? pIndex + pi
                     : pIndex + (pi - values.length - 1);
 
-            console.log("PINDEX: ", pIndex);
+            // console.log("PINDEX: ", pIndex);
 
-            // values.splice(values.indexOf(pivot), 1);
             let higher = [],
                 lower = [],
                 relInd = 0;
             function sort(v, i) {
-                console.log("v, i", v, i);
+                // console.log("v, i", v, i);
                 if (i === pi) return; // dont include the pivot
                 if (v === pivot) {
                     // if there are duplicates, leave them where they are.
@@ -193,7 +192,7 @@ class SortingAlgos {
             values.map(sort);
             pIndex += relInd;
             pIndex += 1;
-            console.log("updated PIndex", pIndex, relInd);
+            // console.log("updated PIndex", pIndex, relInd);
             unsorted.splice(values.indexOf(pivot), 1);
             return recursiveSort(lower, "low")
                 .concat([pivot])
@@ -218,8 +217,7 @@ class SortingAlgos {
             }
             return arr[0];
         }
-        console.log(aniFrames);
-
-        return [recursiveSort(arr, "high"), aniFrames];
+        let solved = recursiveSort(arr, "high")
+        return [solved, aniFrames];
     }
 }
