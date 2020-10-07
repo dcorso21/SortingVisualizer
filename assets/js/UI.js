@@ -22,10 +22,8 @@ class UI {
             num.ondragover = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                if (!dragapprove)
-                    return; //stop unwanted overcalls
-                if (dragVal === e.target)
-                    return; //no change if hover over self
+                if (!dragapprove) return; //stop unwanted overcalls
+                if (dragVal === e.target) return; //no change if hover over self
                 dragapprove = false; // ensure function not called while animating
 
                 let numOrd = getCurrentArrOrdered(),
@@ -52,14 +50,12 @@ class UI {
 
                 // Finding Static Elements (not animated)
                 for (let i = 0; i < numOrd.length; i++) {
-                    if (i === gap || i === hovering)
-                        continue;
+                    if (i === gap || i === hovering) continue;
                     else if (i < Math.min(gap, hovering)) {
                         bf.push(numOrd[i]);
                     } else if (i > Math.max(gap, hovering)) {
                         af.push(numOrd[i]);
-                    } else
-                        continue;
+                    } else continue;
                 }
 
                 // Creating New array from static and animated
@@ -84,7 +80,7 @@ class UI {
                         easing: "easeOutElastic(1, .8)",
                         complete: () => {
                             let arr = e.path[1];
-                            updateArr(arr, newArray);
+                            UI.updateArr(arr, newArray);
                             dragapprove = true; // this function can now be called again
                         },
                     });
@@ -93,6 +89,16 @@ class UI {
             num.ondrop = (e) => {
                 e.preventDefault();
             };
+        });
+    }
+
+    static updateArr(arr, newValues) {
+        arr = removeAllChildNodes(arr);
+        newValues.unshift(brackets[0]);
+        newValues.push(brackets[1]);
+        newValues.map((el) => {
+            el.style.transform = "none";
+            arr.appendChild(el);
         });
     }
 }

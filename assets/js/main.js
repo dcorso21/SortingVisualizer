@@ -18,7 +18,7 @@ function scan() {
     currentNodeArr = getCurrentArrOrdered();
     xd = getRelativeX(currentNodeArr[0], currentNodeArr[1]);
     arrVals = getNodeValues(currentNodeArr);
-    // let [sortedArr, aniFrames] = bubbleSort(arrVals),
+    // let [sortedArr, aniFrames] = SortingAlgos.bubbleSort(arrVals),
     let [sortedArr, aniFrames] = SortingAlgos.selectionSort(arrVals),
         primaryValues = currentNodeArr.slice();
     aniFrames.map((frame) => {
@@ -33,6 +33,12 @@ function scan() {
     currentNodeArr = primaryValues.slice();
 }
 
+/**
+ * Takes a list of nodes and a list of values of the nodes
+ * returns arr of nodes based on given vals
+ * @param {[any]} nodeList
+ * @param {[Number]} HTMLvals
+ */
 function arrFromInnerHTML(nodeList, HTMLvals) {
     let newArr = [];
     let throwaway = nodeList.slice();
@@ -48,6 +54,10 @@ function arrFromInnerHTML(nodeList, HTMLvals) {
     return newArr;
 }
 
+/**
+ * Takes a node list and returns arr of HTMLinner content
+ * @param {[any]} nodeList
+ */
 function getNodeValues(nodeList) {
     let vals = [];
     nodeList.map((node) => {
@@ -56,6 +66,11 @@ function getNodeValues(nodeList) {
     return vals;
 }
 
+/**
+ * Get relative positioning between two html elements in pixels
+ * @param {node} targetElement element with coordinates to go to
+ * @param {node} movingElement elements with coordinates to go from
+ */
 function getRelativeX(targetElement, movingElement) {
     // console.log("see", currentNodeArr, targetElement, movingElement);
     return (
@@ -64,19 +79,9 @@ function getRelativeX(targetElement, movingElement) {
     );
 }
 
-// Scan list of numbers
-// Switch Numbers
-// Scan again
-
-function updateArr(arr, newValues) {
-    arr = removeAllChildNodes(arr);
-    newValues.unshift(brackets[0]);
-    newValues.push(brackets[1]);
-    newValues.map((el) => {
-        el.style.transform = "none";
-        arr.appendChild(el);
-    });
-}
+/**
+ * takes the CurrentNodeArr and updates the html element holding the numbers
+ */
 function refreshArrDiv() {
     arrDiv = removeAllChildNodes(arrDiv);
     let values = currentNodeArr.slice();
@@ -90,13 +95,9 @@ function refreshArrDiv() {
     // console.log(arrDiv);
 }
 
-function removeAllChildNodes(parent) {
-    while (parent.firstChild) {
-        parent.removeChild(parent.firstChild);
-    }
-    return parent;
-}
-
+/**
+ * Returns the current html values in the array.
+ */
 function getCurrentArrOrdered() {
     let nodes = document.getElementsByClassName("arr")[0].childNodes,
         // nums = document.getElementsByClassName("num");
@@ -109,16 +110,13 @@ function getCurrentArrOrdered() {
     return ordered;
 }
 
-function constructNewArr(indexes, arrNodes) {
-    let newArr = [];
-    indexes.map((ind) => {
-        newArr.push(arrNodes[ind]);
-    });
-    return newArr;
-}
-
-function swapPositions([posA, posB]) {
-    let b = currentNodeArr[posB];
-    currentNodeArr[posB] = currentNodeArr[posA];
-    currentNodeArr[posA] = b;
+/**
+ * General function to remove all child nodes from an element
+ * @param {htmlElement} parent HTML element with children to remove
+ */
+function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+    return parent;
 }

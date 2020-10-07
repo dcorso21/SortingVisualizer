@@ -1,14 +1,9 @@
 class SortingAnimations {
     static animateCompare(frame) {
         let save = arrFromInnerHTML(currentNodeArr, frame.values);
-        // console.log(frame.elements);
-        // let save = [currentNodeArr[frame.elements[0]], currentNodeArr[frame.elements[1]]]
-        tl.add({
-            targets: currentNodeArr,
-            keyframes: [{ backgroundColor: "#fff" }],
-            duration: 400,
-            easing: "linear",
-        });
+        SortingAnimations.removeColor(
+            arrFromInnerHTML(currentNodeArr, frame.stillUnsorted)
+        );
         tl.add({
             targets: save,
             keyframes: [{ backgroundColor: "#96d5e8" }],
@@ -18,11 +13,40 @@ class SortingAnimations {
         return currentNodeArr;
     }
 
+    static removeColor(targets) {
+        tl.add({
+            targets: targets,
+            keyframes: [{ backgroundColor: "rgba(255,255,255,0)" }],
+            duration: 400,
+            easing: "linear",
+        });
+    }
+
     static animatePartition(frame) {
+        if (frame.inPlace) {
+            SortingAnimations.removeColor(
+                arrFromInnerHTML(currentNodeArr, frame.stillUnsorted)
+            );
+            tl.add({
+                targets: currentNodeArr[frame.element],
+                keyframes: [
+                    // { translateX: 0 },
+                    { backgroundColor: "#bf97d2" },
+                    { backgroundColor: "#74e098" },
+                ],
+                duration: 900,
+                easing: "linear",
+            });
+            return currentNodeArr;
+        }
         let nudge = frame.index,
             toNudge = [],
             moving = currentNodeArr.slice()[frame.element],
-            after = currentNodeArr.slice(frame.element, currentNodeArr.length);
+            after = currentNodeArr.slice(
+                frame.element + 1,
+                currentNodeArr.length
+            );
+
         while (nudge !== frame.element) {
             toNudge.push(nudge);
             nudge++;
@@ -31,20 +55,19 @@ class SortingAnimations {
             toNudge[i] = currentNodeArr[v];
         });
 
+        SortingAnimations.removeColor(
+            arrFromInnerHTML(currentNodeArr, frame.stillUnsorted)
+        );
         SortingAnimations.resetAnimX();
         tl.add({
             targets: currentNodeArr[frame.element],
             keyframes: [
                 // { translateX: 0 },
-                { translateY: -40 },
+                { translateY: -40, backgroundColor: "#bf97d2" },
                 {
-                    translateX: -1 *
-                        getRelativeX(
-                            currentNodeArr[frame.index],
-                            currentNodeArr[frame.element]
-                        ),
+                    translateX: -1 * xd * toNudge.length,
                 },
-                { translateY: 0 },
+                { translateY: 0, backgroundColor: "#74e098" },
             ],
             duration: 900,
             easing: "easeOutElastic(1, .8)",
@@ -54,30 +77,24 @@ class SortingAnimations {
                 targets: toNudge,
                 keyframes: [
                     {
-                        translateX: getRelativeX(
-                            currentNodeArr[0],
-                            currentNodeArr[1]
-                        ),
+                        translateX: xd,
                     },
                 ],
                 duration: 900,
                 easing: "easeOutElastic(1, .8)",
                 delay: anime.stagger(100),
                 changeComplete: () => {
-                    partAndSlice(), refreshArrDiv();
+                    partAndSlice();
+                    refreshArrDiv();
                 },
             },
             "-=800"
         );
         function partAndSlice() {
             currentNodeArr = currentNodeArr.slice(0, frame.index);
-            console.log("bf", currentNodeArr);
             currentNodeArr.push(moving);
-            console.log("el", currentNodeArr);
             currentNodeArr = currentNodeArr.concat(toNudge);
             currentNodeArr = currentNodeArr.concat(after);
-            console.log("after", currentNodeArr);
-            // refreshArrDiv();
         }
         partAndSlice();
         return currentNodeArr;
@@ -101,6 +118,11 @@ class SortingAnimations {
             swapPositions(frame.elements.slice());
             refreshArrDiv();
         }
+        function swapPositions([posA, posB]) {
+            let b = currentNodeArr[posB];
+            currentNodeArr[posB] = currentNodeArr[posA];
+            currentNodeArr[posA] = b;
+        }
         swapPositions(frame.elements.slice());
         return currentNodeArr;
     }
@@ -117,9 +139,7 @@ class SortingAnimations {
         });
         tl.add({
             targets: currentNodeArr,
-            keyframes: [
-                { backgroundColor: "#74e098" },
-            ],
+            keyframes: [{ backgroundColor: "#74e098" }],
             duration: 400,
             easing: "linear",
             delay: anime.stagger(100),
