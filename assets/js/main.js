@@ -19,7 +19,7 @@ function scan() {
     xd = getRelativeX(currentNodeArr[0], currentNodeArr[1]);
     arrVals = getNodeValues(currentNodeArr);
     // let [sortedArr, aniFrames] = SortingAlgos.bubbleSort(arrVals),
-    let [sortedArr, aniFrames] = SortingAlgos.selectionSort(arrVals),
+    let [sortedArr, aniFrames] = SortingAlgos.quickSort(arrVals),
         primaryValues = currentNodeArr.slice();
     aniFrames.map((frame) => {
         actions = {

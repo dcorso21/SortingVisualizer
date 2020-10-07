@@ -84,17 +84,142 @@ class SortingAlgos {
         return [arr, aniFrames];
     }
     static insertionSort(arr) {
-        let sorted = [arr.shift()];
+        let sorted = [arr.shift()],
+            aniFrames = [];
 
         arr.map((v, i) => {
-            let toRight = [];
-            while (v < sorted[sorted.length - 1]) {
-                toRight.unshift(sorted.pop());
+            let toRight = [],
+                movInd = i;
+            i++;
+            while (true) {
+                if (i === 0) break;
+                aniFrames.push({
+                    action: "compare",
+                    elements: [i - 1, i],
+                    values: [sorted[sorted.length - 1], v],
+                    stillUnsorted: arr.slice(arr.indexOf(v)),
+                });
+                if (v < sorted[sorted.length - 1]) {
+                    let newFrame = {
+                        action: "swap",
+                        elements: [i - 1, i],
+                        values: [sorted[sorted.length - 1], v],
+                    };
+                    (newFrame.xdMult =
+                        -1 *
+                        Math.abs(newFrame.elements[0] - newFrame.elements[1])),
+                        aniFrames.push(newFrame);
+                    toRight.unshift(sorted.pop());
+                    movInd--;
+                    i--;
+                } else break;
             }
             sorted.push(v);
             sorted = sorted.concat(toRight);
+            console.log("sor", sorted);
+            if (v !== arr[arr.length - 1]) {
+                aniFrames.push({
+                    action: "solved",
+                    solved: sorted.slice(),
+                });
+            }
         });
         aniFrames.push({ action: "solved" });
         return [sorted, aniFrames];
+    }
+    static quickSort(arr) {
+        let aniFrames = [],
+            pIndex = 0,
+            unsorted = arr.slice();
+
+        function recursiveSort(values, highOrLow) {
+            if (values.length <= 1) return values;
+            let pivot = pickPivot(values),
+                pi = values.indexOf(pivot);
+
+            pIndex =
+                highOrLow == "high"
+                    ? pIndex + pi
+                    : pIndex + (pi - values.length - 1);
+
+            console.log("PINDEX: ", pIndex);
+
+            // values.splice(values.indexOf(pivot), 1);
+            let higher = [],
+                lower = [],
+                relInd = 0;
+            function sort(v, i) {
+                console.log("v, i", v, i);
+                if (i === pi) return; // dont include the pivot
+                if (v === pivot) {
+                    // if there are duplicates, leave them where they are.
+                    pIndex + i - pi < pIndex
+                        ? higher.unshift(v)
+                        : lower.push(v);
+                    return;
+                }
+                aniFrames.push({
+                    action: "compare",
+                    elements: [pIndex + relInd, pIndex + i - pi + relInd],
+                    values: [pivot, v],
+                    stillUnsorted: unsorted.slice(),
+                });
+                if (v > pivot) {
+                    if (pIndex + i - pi < pIndex) {
+                        aniFrames.push({
+                            action: "partition",
+                            element: pIndex + i - pi + relInd,
+                            index: pIndex - pi + values.length - 1,
+                            stillUnsorted: unsorted,
+                            inPlace: false,
+                        });
+                        relInd--;
+                    }
+                    higher.push(v);
+                } else {
+                    if (pIndex + i - pi > pIndex) {
+                        aniFrames.push({
+                            action: "partition",
+                            element: pIndex + i - pi + relInd,
+                            index: pIndex - pi,
+                            stillUnsorted: unsorted,
+                            inPlace: false,
+                        });
+                        relInd++;
+                    }
+                    lower.unshift(v);
+                }
+            }
+            values.map(sort);
+            pIndex += relInd;
+            pIndex += 1;
+            console.log("updated PIndex", pIndex, relInd);
+            unsorted.splice(values.indexOf(pivot), 1);
+            return recursiveSort(lower, "low")
+                .concat([pivot])
+                .concat(recursiveSort(higher, "high"));
+        }
+
+        function pickPivot(arr) {
+            let pVals;
+            if (arr.length > 3) {
+                pVals = [
+                    arr[0],
+                    arr[arr.length - 1],
+                    arr[Math.round(arr.length / 2)],
+                ];
+            } else if (arr.length === 3) {
+                pVals = arr.slice();
+            }
+            if (!!pVals) {
+                pVals.splice(pVals.indexOf(Math.min(...pVals)), 1);
+                pVals.splice(pVals.indexOf(Math.max(...pVals)), 1);
+                return pVals[0];
+            }
+            return arr[0];
+        }
+        console.log(aniFrames);
+
+        return [recursiveSort(arr, "high"), aniFrames];
     }
 }

@@ -54,6 +54,7 @@ class SortingAnimations {
         toNudge.map((v, i) => {
             toNudge[i] = currentNodeArr[v];
         });
+        // console.log(toNudge);
 
         SortingAnimations.removeColor(
             arrFromInnerHTML(currentNodeArr, frame.stillUnsorted)
@@ -91,6 +92,7 @@ class SortingAnimations {
             "-=800"
         );
         function partAndSlice() {
+            console.log(currentNodeArr);
             currentNodeArr = currentNodeArr.slice(0, frame.index);
             currentNodeArr.push(moving);
             currentNodeArr = currentNodeArr.concat(toNudge);
@@ -101,6 +103,7 @@ class SortingAnimations {
     }
 
     static animateSwap(frame) {
+        console.log(frame.values);
         let save = arrFromInnerHTML(currentNodeArr, frame.values);
         tl.add({
             targets: [save[0], save[1]],
@@ -128,17 +131,14 @@ class SortingAnimations {
     }
 
     static animateSolved(frame) {
+        let solved = currentNodeArr;
+        if (!!frame.solved){
+            console.log("hello world");
+            solved = arrFromInnerHTML(currentNodeArr, frame.solved)
+        }
+        SortingAnimations.removeColor(solved);
         tl.add({
-            targets: currentNodeArr,
-            keyframes: [
-                // { backgroundColor: "#96d5e8" },
-                { backgroundColor: "#fff" },
-            ],
-            duration: 400,
-            easing: "linear",
-        });
-        tl.add({
-            targets: currentNodeArr,
+            targets: solved,
             keyframes: [{ backgroundColor: "#74e098" }],
             duration: 400,
             easing: "linear",
