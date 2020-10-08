@@ -23,6 +23,7 @@ class SortingAnimations {
     }
 
     static animatePartition(frame) {
+        // frame.element = arrFromInnerHTML(currentNodeArr, [frame.element])[0];
         if (frame.inPlace) {
             SortingAnimations.removeColor(
                 arrFromInnerHTML(currentNodeArr, frame.stillUnsorted)
@@ -30,7 +31,6 @@ class SortingAnimations {
             tl.add({
                 targets: currentNodeArr[frame.element],
                 keyframes: [
-                    // { translateX: 0 },
                     { backgroundColor: "#bf97d2" },
                     { backgroundColor: "#74e098" },
                 ],
@@ -93,22 +93,22 @@ class SortingAnimations {
         function partAndSlice() {
             currentNodeArr = before.slice();
             if (frame.backwards) {
-                console.log("before", before);
-                console.log("N", toNudge);
-                console.log("e", focusedElement);
-                console.log("after", after);
+                // console.log("before", before);
+                // console.log("N", toNudge);
+                // console.log("e", focusedElement);
+                // console.log("after", after);
                 currentNodeArr = currentNodeArr.concat(toNudge.slice());
                 currentNodeArr.push(focusedElement);
             } else {
-                console.log("before", before);
-                console.log("e", focusedElement);
-                console.log("N", toNudge);
-                console.log("after", after);
+                // console.log("before", before);
+                // console.log("e", focusedElement);
+                // console.log("N", toNudge);
+                // console.log("after", after);
                 currentNodeArr.push(focusedElement);
                 currentNodeArr = currentNodeArr.concat(toNudge.slice());
             }
             currentNodeArr = currentNodeArr.concat(after.slice());
-            console.log("FINAL", currentNodeArr);
+            // console.log("FINAL", currentNodeArr);
         }
         partAndSlice();
         return currentNodeArr;
