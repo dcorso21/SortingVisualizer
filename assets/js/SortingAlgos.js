@@ -134,74 +134,42 @@ class SortingAlgos {
             unsorted = arr.slice();
 
         function recursiveSort(values, highOrLow, parentInd) {
-            console.log("vals", values);
             if (values.length <= 1) return values;
+            console.log("vals", values);
             let pivot = pickPivot(values),
                 pi = values.indexOf(pivot);
 
             parentInd =
                 highOrLow == "high"
                     ? parentInd + pi + 1
-                    : parentInd + (pi - values.length);
-            
+                    : parentInd + (pi - values.length - 1) - 1;
+
             console.log("PINDEX, PIVOT", parentInd, pivot);
 
-
             let higher = [],
+                high = [],
                 lower = [],
+                low = [],
                 offset = 0;
-            function sort(v, i) {
-                if (i === pi) return; // dont include the pivot
-                if (v === pivot) {
-                    // if there are duplicates, leave them where they are.
-                    parentInd + i - pi + offset < parentInd
-                        ? higher.push(v)
-                        : lower.unshift(v);
-                    return;
+            values.map((v, i) => {
+                if (i === pi) return; // skip pivot
+                //Compare Animation
+                if (v > pivot && i < pi) {
+                    // Move to Right
+                    console.log(`${v} at index ${i} moves right`);
+                    higher.push(v);
+                    offset++;
+                } else if (v < pivot && i > pi) {
+                    // Move to Left
+                    console.log(`${v} at index ${i} moves left`);
+                    lower.unshift(v);
+                    offset++;
+                } else {
+                    i > pi ? high.unshift(v) : low.push(v);
                 }
-                let elementInd = i - pi + parentInd + offset
-                console.log("ELEMENTINDEX, element", elementInd, v);
-
-                aniFrames.push({
-                    action: "compare",
-                    elements: [parentInd + offset, parentInd + i - pi + offset],
-                    values: [pivot, v],
-                    stillUnsorted: unsorted.slice(),
-                });
-                if (v > pivot) { // Move Right
-                    if (elementInd < parentInd + offset) {
-                        aniFrames.push({
-                            action: "partition",
-                            element: elementInd,
-                            index: parentInd - pi + values.length - 1 + offset, // end of list
-                            stillUnsorted: unsorted,
-                            inPlace: false,
-                            backwards: true,
-                        });
-                        console.log(`${v} (at ind ${elementInd}) moved RIGHT to index ${parentInd - pi +values.length -1 + offset}`);
-                        offset--;
-                        higher.push(v);
-                    } else higher.unshift(v);
-                } else { //Move Left
-                    if (elementInd > parentInd + offset) {
-                        offset++;
-                        console.log("afteroff", parentInd, pi, offset);
-                        aniFrames.push({
-                            action: "partition",
-                            element: elementInd,
-                            index: pi === 0? parentInd :parentInd - pi + offset, // start of list
-                            stillUnsorted: unsorted,
-                            inPlace: false,
-                        });
-                        console.log(`${v} (at ind ${elementInd}) moved LEFT to index ${parentInd - pi + offset}`);
-                        // offset++;
-                        lower.unshift(v);
-                    } else lower.push(v)
-                }
-            }
-            values.map(sort);
-            parentInd += offset
-            console.log("updated PIndex", parentInd);
+            });
+            lower = lower.concat(low);
+            higher = high.concat(higher);
             unsorted.splice(values.indexOf(pivot), 1);
             return recursiveSort(lower, "low", parentInd)
                 .concat([pivot])
@@ -227,7 +195,7 @@ class SortingAlgos {
             return arr[0];
         }
 
-        let solved = recursiveSort(arr, "high", -1)
+        let solved = recursiveSort(arr, "high", -1);
         aniFrames.push({ action: "solved" });
         console.log(solved, aniFrames);
         return [solved, aniFrames];
