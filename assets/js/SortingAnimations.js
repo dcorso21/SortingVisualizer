@@ -39,20 +39,22 @@ class SortingAnimations {
             });
             return currentNodeArr;
         }
-        let nudge = frame.index,
-            toNudge = [],
-            moving = currentNodeArr.slice()[frame.element],
-            after = currentNodeArr.slice(
-                frame.element + 1,
-                currentNodeArr.length
-            );
-
-        while (nudge !== frame.element) {
-            toNudge.push(currentNodeArr[nudge]);
-            nudge++;
-            // console.log(nudge);
+        let toNudge = [],
+            before,
+            after,
+            focusedElement = currentNodeArr[frame.element],
+            customXD;
+        if (frame.backwards) {
+            before = currentNodeArr.slice(0, frame.element);
+            toNudge = currentNodeArr.slice(frame.element + 1, frame.index + 1);
+            after = currentNodeArr.slice(frame.index + 1);
+            customXD = xd * -1;
+        } else {
+            before = currentNodeArr.slice(0, frame.index);
+            toNudge = currentNodeArr.slice(frame.index, frame.element);
+            after = currentNodeArr.slice(frame.element + 1);
+            customXD = xd;
         }
-        return currentNodeArr;
 
         SortingAnimations.removeColor(
             arrFromInnerHTML(currentNodeArr, frame.stillUnsorted)
@@ -63,7 +65,7 @@ class SortingAnimations {
             keyframes: [
                 { translateY: -40, backgroundColor: "#bf97d2" },
                 {
-                    translateX: -1 * xd * toNudge.length,
+                    translateX: customXD * toNudge.length * -1,
                 },
                 { translateY: 0, backgroundColor: "#74e098" },
             ],
@@ -75,7 +77,7 @@ class SortingAnimations {
                 targets: toNudge,
                 keyframes: [
                     {
-                        translateX: xd,
+                        translateX: customXD,
                     },
                 ],
                 duration: 900,
@@ -89,10 +91,24 @@ class SortingAnimations {
             "-=800"
         );
         function partAndSlice() {
-            currentNodeArr = currentNodeArr.slice(0, frame.index);
-            currentNodeArr.push(moving);
-            currentNodeArr = currentNodeArr.concat(toNudge);
-            currentNodeArr = currentNodeArr.concat(after);
+            currentNodeArr = before.slice();
+            if (frame.backwards) {
+                console.log("before", before);
+                console.log("N", toNudge);
+                console.log("e", focusedElement);
+                console.log("after", after);
+                currentNodeArr = currentNodeArr.concat(toNudge.slice());
+                currentNodeArr.push(focusedElement);
+            } else {
+                console.log("before", before);
+                console.log("e", focusedElement);
+                console.log("N", toNudge);
+                console.log("after", after);
+                currentNodeArr.push(focusedElement);
+                currentNodeArr = currentNodeArr.concat(toNudge.slice());
+            }
+            currentNodeArr = currentNodeArr.concat(after.slice());
+            console.log("FINAL", currentNodeArr);
         }
         partAndSlice();
         return currentNodeArr;
@@ -129,7 +145,6 @@ class SortingAnimations {
     static animateSolved(frame) {
         let solved = currentNodeArr;
         if (!!frame.solved) {
-            console.log("hello world");
             solved = arrFromInnerHTML(currentNodeArr, frame.solved);
         }
         SortingAnimations.removeColor(solved);

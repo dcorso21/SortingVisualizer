@@ -128,6 +128,7 @@ class SortingAlgos {
         return [sorted, aniFrames];
     }
     static quickSort(arr) {
+        console.log(arr);
         let aniFrames = [],
             pIndex = 0,
             unsorted = arr.slice();
@@ -153,8 +154,8 @@ class SortingAlgos {
                 if (v === pivot) {
                     // if there are duplicates, leave them where they are.
                     pIndex + i - pi < pIndex
-                        ? higher.unshift(v)
-                        : lower.push(v);
+                        ? higher.push(v)
+                        : lower.unshift(v);
                     return;
                 }
                 aniFrames.push({
@@ -171,10 +172,11 @@ class SortingAlgos {
                             index: pIndex - pi + values.length - 1,
                             stillUnsorted: unsorted,
                             inPlace: false,
+                            backwards: true,
                         });
                         relInd--;
-                    }
-                    higher.push(v);
+                        higher.push(v);
+                    } else higher.unshift(v);
                 } else {
                     if (pIndex + i - pi > pIndex) {
                         aniFrames.push({
@@ -185,9 +187,9 @@ class SortingAlgos {
                             inPlace: false,
                         });
                         relInd++;
-                    }
-                    lower.unshift(v);
-                }
+                        lower.unshift(v);
+                    } else lower.push(v)
+                } 
             }
             values.map(sort);
             pIndex += relInd;
@@ -217,7 +219,10 @@ class SortingAlgos {
             }
             return arr[0];
         }
+
         let solved = recursiveSort(arr, "high")
+        aniFrames.push({ action: "solved" });
+        console.log(aniFrames);
         return [solved, aniFrames];
     }
 }
