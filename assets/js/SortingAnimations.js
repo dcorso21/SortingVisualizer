@@ -204,4 +204,55 @@ class SortingAnimations {
             });
         });
     }
+
+    static shuffleValues() {
+        tl = anime.timeline();
+        let arr = [...getCurrentArrOrdered()];
+        // Fisher Yates Shuffle Found here:
+        values = [...arr];
+        // https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb
+        for (let i = values.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * i);
+            const temp = values[i];
+            values[i] = values[j];
+            values[j] = temp;
+        }
+
+        currentNodeArr = [...values];
+
+        let sep = getRelativeX(arr[1], arr[0]),
+            yd = 20,
+            dur = 900;
+
+        arr.map((e, i) => {
+            let newInd = values.indexOf(e),
+                xd = (i - newInd) * sep;
+            if (i % 2 === 0) {
+                yd += 20;
+            }
+            yd *= -1;
+            let offset = 50 * i;
+            console.log(offset);
+
+            tl.add({
+                targets: e,
+                keyframes: [
+                    { translateY: yd },
+                    {
+                        translateX: xd,
+                    },
+                    { translateY: 0 },
+                ],
+                duration: dur,
+                easing: "easeOutExpo",
+                // delay: 50 *i,
+                complete: () => {
+                    if (i == arr.length -1) {
+                        currentNodeArr = values.slice();
+                        refreshArrDiv();
+                    }
+                },
+            }, offset);
+        });
+    }
 }
