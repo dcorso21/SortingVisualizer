@@ -1,8 +1,8 @@
 class SortingAnimations {
     static animateCompare(frame) {
-        let save = arrFromInnerHTML(currentNodeArr, frame.values);
+        let save = arrFromPulledValues(currentNodeArr, frame.values);
         SortingAnimations.removeColor(
-            arrFromInnerHTML(currentNodeArr, frame.stillUnsorted)
+            arrFromPulledValues(currentNodeArr, frame.stillUnsorted)
         );
         tl.add({
             targets: save,
@@ -26,7 +26,7 @@ class SortingAnimations {
         // frame.element = arrFromInnerHTML(currentNodeArr, [frame.element])[0];
         if (frame.inPlace) {
             SortingAnimations.removeColor(
-                arrFromInnerHTML(currentNodeArr, frame.stillUnsorted)
+                arrFromPulledValues(currentNodeArr, frame.stillUnsorted)
             );
             tl.add({
                 targets: currentNodeArr[frame.element],
@@ -57,7 +57,7 @@ class SortingAnimations {
         }
 
         SortingAnimations.removeColor(
-            arrFromInnerHTML(currentNodeArr, frame.stillUnsorted)
+            arrFromPulledValues(currentNodeArr, frame.stillUnsorted)
         );
         SortingAnimations.resetAnimX();
         tl.add({
@@ -106,7 +106,7 @@ class SortingAnimations {
     }
 
     static animateSwap(frame) {
-        let save = arrFromInnerHTML(currentNodeArr, frame.values);
+        let save = arrFromPulledValues(currentNodeArr, frame.values);
         tl.add({
             targets: [save[0], save[1]],
             keyframes: [
@@ -135,7 +135,7 @@ class SortingAnimations {
     static animateSolved(frame) {
         let solved = currentNodeArr;
         if (!!frame.solved) {
-            solved = arrFromInnerHTML(currentNodeArr, frame.solved);
+            solved = arrFromPulledValues(currentNodeArr, frame.solved);
         }
         SortingAnimations.removeColor(solved);
         tl.add({
@@ -201,14 +201,7 @@ class SortingAnimations {
 
         let arr = [...getCurrentArrOrdered()];
         values = [...arr];
-        // Fisher Yates Shuffle Found here:
-        // https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb
-        for (let i = values.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * i);
-            const temp = values[i];
-            values[i] = values[j];
-            values[j] = temp;
-        }
+        values = shuffle(values);
 
         currentNodeArr = [...values];
 
@@ -225,24 +218,27 @@ class SortingAnimations {
             yd *= -1;
             let offset = 50 * i;
 
-            tl.add({
-                targets: e,
-                keyframes: [
-                    { translateY: yd },
-                    {
-                        translateX: xd,
+            tl.add(
+                {
+                    targets: e,
+                    keyframes: [
+                        { translateY: yd },
+                        {
+                            translateX: xd,
+                        },
+                        { translateY: 0 },
+                    ],
+                    duration: dur,
+                    easing: "easeOutExpo",
+                    complete: () => {
+                        if (i == arr.length - 1) {
+                            currentNodeArr = values.slice();
+                            refreshArrDiv();
+                        }
                     },
-                    { translateY: 0 },
-                ],
-                duration: dur,
-                easing: "easeOutExpo",
-                complete: () => {
-                    if (i == arr.length -1) {
-                        currentNodeArr = values.slice();
-                        refreshArrDiv();
-                    }
                 },
-            }, offset);
+                offset
+            );
         });
     }
 }

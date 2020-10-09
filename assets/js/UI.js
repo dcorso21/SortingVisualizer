@@ -1,6 +1,6 @@
 class UI {
     static enableDragNumbers() {
-        nums.map((num) => {
+        pullElements().map((num) => {
             num.ondragstart = (e) => {
                 // e.preventDefault();
                 let img = e.target.cloneNode(true);

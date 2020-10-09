@@ -1,14 +1,16 @@
 let tl,
-    nums = [...document.getElementsByClassName("num")],
     arrDiv = document.getElementsByClassName("arr")[0],
     brackets = document.querySelectorAll(".bracket"),
     currentNodeArr,
     xd,
     dragVal,
-    dragapprove = true;
+    dragapprove = true,
+    focusOn = "arr";
 
 window.onload = () => {
     UI.enableDragNumbers();
+    // renderBars(7);
+
     // scan();
 };
 
@@ -16,10 +18,12 @@ function scan() {
     dragapprove = false;
     tl = anime.timeline();
     currentNodeArr = getCurrentArrOrdered();
+    console.log(currentNodeArr);
     xd = getRelativeX(currentNodeArr[0], currentNodeArr[1]);
     arrVals = getNodeValues(currentNodeArr);
+    console.log(arrVals);
     // let [sortedArr, aniFrames] = SortingAlgos.bubbleSort(arrVals),
-    let [sortedArr, aniFrames] = SortingAlgos.insertionSort(arrVals),
+    let [sortedArr, aniFrames] = SortingAlgos.selectionSort(arrVals),
         primaryValues = currentNodeArr.slice();
     aniFrames.map((frame) => {
         actions = {
@@ -37,12 +41,27 @@ function scan() {
  * Takes a list of nodes and a list of values of the nodes
  * returns arr of nodes based on given vals
  * @param {[any]} nodeList
- * @param {[Number]} HTMLvals
+ * @param {[Number]} values
  */
-function arrFromInnerHTML(nodeList, HTMLvals) {
-    let newArr = [];
-    let throwaway = nodeList.slice();
-    HTMLvals.map((v) => {
+function arrFromPulledValues(nodeList, values) {
+    let newArr = [],
+        throwaway = nodeList.slice();
+    values.map((v) => {
+        let add = false;
+        for (let i = 0; i < throwaway.length; i++) {
+            if (focusOn === "bars" && pullHeight(throwaway[i]) == v) {
+                add = true;
+            } else if (Number(throwaway[i].innerHTML) == v) {
+                add = true;
+            }
+            if (add) {
+                newArr.push(throwaway[i]);
+                throwaway.splice(i, 1);
+                break;
+            }
+        }
+    });
+    values.map((v) => {
         for (let i = 0; i < throwaway.length; i++) {
             if (Number(throwaway[i].innerHTML) == v) {
                 newArr.push(throwaway[i]);
@@ -60,10 +79,21 @@ function arrFromInnerHTML(nodeList, HTMLvals) {
  */
 function getNodeValues(nodeList) {
     let vals = [];
+    console.log(focusOn);
     nodeList.map((node) => {
-        vals.push(Number(node.innerHTML));
+        if (focusOn === "bars") {
+            vals.push(pullHeight(node));
+        } else {
+            vals.push(Number(node.innerHTML));
+        }
     });
     return vals;
+}
+
+function pullHeight(node) {
+    let h = node.style.height;
+    h = h.slice(0, h.length - 3);
+    return Number(h);
 }
 
 /**
@@ -87,7 +117,6 @@ function refreshArrDiv() {
     values.unshift(brackets[0]);
     values.push(brackets[1]);
     values.map((el) => {
-        
         el.style.transform = "translateX(0px)";
         arrDiv.appendChild(el);
     });
@@ -97,11 +126,10 @@ function refreshArrDiv() {
  * Returns the current html values in the array.
  */
 function getCurrentArrOrdered() {
-    let nodes = document.getElementsByClassName("arr")[0].childNodes,
-        // nums = document.getElementsByClassName("num");
-        ordered = [];
+    let nodes = pullElements();
+    (ordered = []), (elements = pullElements());
     [...nodes].map((n) => {
-        if (nums.includes(n)) {
+        if (elements.includes(n)) {
             ordered.push(n);
         }
     });
@@ -118,3 +146,45 @@ function removeAllChildNodes(parent) {
     }
     return parent;
 }
+
+function shuffle(arr) {
+    // Fisher Yates Shuffle Found here:
+    // https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * i);
+        const temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    return arr;
+}
+
+function pullElements() {
+    let val = focusOn === "bars" ? "bar" : "num";
+    return [...document.getElementsByClassName(val)];
+}
+
+function makeBars() {
+    nums = pullElements()
+    nums.map((v, i) => {
+        let h = 50
+        console.log(h);
+        h = Number(v.innerHTML) * h
+        console.log(h);
+        v.style.height = `${h}px`;
+        v.style.borderRadius = "20px";
+        v.style.lineHeight = v.style.height;
+    })
+}
+
+function populateArrayDiv(numOfBars) {
+    let bracket1 = document.createElement("div");
+    bracket1.className = "bracket";
+    bracket1.innerHTML = "[";
+    let bracket2 = document.createElement("div");
+    bracket2.className = "bracket";
+    bracket2.innerHTML = "]";
+    
+}
+
+makeBars();
