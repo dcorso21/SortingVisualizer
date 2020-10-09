@@ -178,13 +178,26 @@ function makeBars() {
 }
 
 function populateArrayDiv(numOfBars) {
-    let bracket1 = document.createElement("div");
-    bracket1.className = "bracket";
-    bracket1.innerHTML = "[";
-    let bracket2 = document.createElement("div");
-    bracket2.className = "bracket";
-    bracket2.innerHTML = "]";
+    let arrFill = [];
+    // let bracket1 = document.createElement("div");
+    // bracket1.className = "bracket";
+    // bracket1.innerHTML = "[";
+    // arrFill.push(bracket1)
+    // let bracket2 = document.createElement("div");
+    // bracket2.className = "bracket";
+    // bracket2.innerHTML = "]";
+    // arrFill.push(bracket2)
+    let values = [...Array(numOfBars).keys()];
+    values.map((v, i) => {
+        let bar = document.createElement("div");
+        bar.className = "num";
+        bar.innerHTML = v + 1;
+        arrFill.push(bar)
+    })
+    currentNodeArr = arrFill;
+    refreshArrDiv()
     
 }
 
+populateArrayDiv(10)
 makeBars();

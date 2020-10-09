@@ -197,7 +197,7 @@ class SortingAnimations {
 
     static shuffleValues() {
         tl = anime.timeline();
-        SortingAnimations.removeColor(currentNodeArr);
+        // SortingAnimations.removeColor(currentNodeArr);
 
         let arr = [...getCurrentArrOrdered()];
         values = [...arr];
@@ -211,9 +211,11 @@ class SortingAnimations {
 
         arr.map((e, i) => {
             let newInd = values.indexOf(e),
-                xd = (i - newInd) * sep;
+                xd = (i - newInd) * sep,
+                scalar = .2;
             if (i % 2 === 0) {
                 yd += 20;
+                scalar *= -1;
             }
             yd *= -1;
             let offset = 50 * i;
@@ -222,11 +224,11 @@ class SortingAnimations {
                 {
                     targets: e,
                     keyframes: [
-                        { translateY: yd },
+                        { translateY: yd, scale: 1 + scalar },
                         {
                             translateX: xd,
                         },
-                        { translateY: 0 },
+                        { translateY: 0, scale: 1 },
                     ],
                     duration: dur,
                     easing: "easeOutExpo",
