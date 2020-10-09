@@ -93,29 +93,19 @@ class SortingAnimations {
         function partAndSlice() {
             currentNodeArr = before.slice();
             if (frame.backwards) {
-                // console.log("before", before);
-                // console.log("N", toNudge);
-                // console.log("e", focusedElement);
-                // console.log("after", after);
                 currentNodeArr = currentNodeArr.concat(toNudge.slice());
                 currentNodeArr.push(focusedElement);
             } else {
-                // console.log("before", before);
-                // console.log("e", focusedElement);
-                // console.log("N", toNudge);
-                // console.log("after", after);
                 currentNodeArr.push(focusedElement);
                 currentNodeArr = currentNodeArr.concat(toNudge.slice());
             }
             currentNodeArr = currentNodeArr.concat(after.slice());
-            // console.log("FINAL", currentNodeArr);
         }
         partAndSlice();
         return currentNodeArr;
     }
 
     static animateSwap(frame) {
-        console.log(frame.values);
         let save = arrFromInnerHTML(currentNodeArr, frame.values);
         tl.add({
             targets: [save[0], save[1]],
@@ -207,9 +197,11 @@ class SortingAnimations {
 
     static shuffleValues() {
         tl = anime.timeline();
+        SortingAnimations.removeColor(currentNodeArr);
+
         let arr = [...getCurrentArrOrdered()];
-        // Fisher Yates Shuffle Found here:
         values = [...arr];
+        // Fisher Yates Shuffle Found here:
         // https://medium.com/@nitinpatel_20236/how-to-shuffle-correctly-shuffle-an-array-in-javascript-15ea3f84bfb
         for (let i = values.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * i);
@@ -232,7 +224,6 @@ class SortingAnimations {
             }
             yd *= -1;
             let offset = 50 * i;
-            console.log(offset);
 
             tl.add({
                 targets: e,
@@ -245,7 +236,6 @@ class SortingAnimations {
                 ],
                 duration: dur,
                 easing: "easeOutExpo",
-                // delay: 50 *i,
                 complete: () => {
                     if (i == arr.length -1) {
                         currentNodeArr = values.slice();

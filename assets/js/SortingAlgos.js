@@ -165,7 +165,7 @@ class SortingAlgos {
                         index: endInd,
                         stillUnsorted: unsorted,
                         backwards: true,
-                    })
+                    });
                     higher.push(v);
                     pOff--;
                     rOff--;
@@ -177,7 +177,7 @@ class SortingAlgos {
                         index: startInd,
                         stillUnsorted: unsorted,
                         backwards: false,
-                    })
+                    });
                     lower.unshift(v);
                     pOff++;
                 } else {
@@ -188,9 +188,9 @@ class SortingAlgos {
             lower = lower.concat(low);
             higher = high.concat(higher);
             unsorted.splice(values.indexOf(pivot), 1);
-            return recursiveSort(lower, "low", parentInd -1)
+            return recursiveSort(lower, "low", parentInd - 1)
                 .concat([pivot])
-                .concat(recursiveSort(higher, "high", parentInd +1));
+                .concat(recursiveSort(higher, "high", parentInd + 1));
         }
 
         function pickPivot(arr) {
@@ -215,5 +215,38 @@ class SortingAlgos {
         let solved = recursiveSort(arr, "high", 0);
         aniFrames.push({ action: "solved" });
         return [solved, aniFrames];
+    }
+    static mergeSort(arr) {
+        function splitArr(arr) {
+            if (arr.length <= 1) return arr;
+            let halfway = arr.length / 2;
+            return [
+                splitArr(arr.slice(0, halfway)),
+                splitArr(arr.slice(halfway)),
+            ];
+        }
+        function mergeArrs([arr1, arr2]) {
+            let merged = [];
+            while (!!arr1.length && !!arr2.length) {
+                merged.push(arr1[0] < arr2[0] ? arr1.shift() : arr2.shift());
+            }
+            return [...merged, ...arr1, ...arr2];
+        }
+
+        function recursiveMerge(arr) {
+            arr.map((v, i) => {
+                console.log(arr[i]);
+                if (!Array.isArray(v[0])) return; // leave value alone
+                v.map((e, j) => {
+                    if (Array.isArray(e[0])){
+                        arr[i][j] = recursiveMerge(e);
+                    }
+                })
+                arr[i] = mergeArrs(arr[i])
+            })
+            return mergeArrs(arr);
+        }
+
+        return recursiveMerge(splitArr(arr));
     }
 }
