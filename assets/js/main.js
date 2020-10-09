@@ -72,7 +72,6 @@ function getNodeValues(nodeList) {
  * @param {node} movingElement elements with coordinates to go from
  */
 function getRelativeX(targetElement, movingElement) {
-    // console.log("see", currentNodeArr, targetElement, movingElement);
     return (
         movingElement.getBoundingClientRect().x -
         targetElement.getBoundingClientRect().x
@@ -85,15 +84,13 @@ function getRelativeX(targetElement, movingElement) {
 function refreshArrDiv() {
     arrDiv = removeAllChildNodes(arrDiv);
     let values = currentNodeArr.slice();
-    // console.log("vals", values);
     values.unshift(brackets[0]);
     values.push(brackets[1]);
-    console.log(values);
     values.map((el) => {
+        
         el.style.transform = "translateX(0px)";
         arrDiv.appendChild(el);
     });
-    // console.log(arrDiv);
 }
 
 /**
