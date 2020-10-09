@@ -88,6 +88,7 @@ function refreshArrDiv() {
     // console.log("vals", values);
     values.unshift(brackets[0]);
     values.push(brackets[1]);
+    console.log(values);
     values.map((el) => {
         el.style.transform = "translateX(0px)";
         arrDiv.appendChild(el);

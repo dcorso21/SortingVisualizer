@@ -140,9 +140,9 @@ class SortingAlgos {
                 pi = values.indexOf(pivot);
 
             parentInd =
-                highOrLow == "high"
-                    ? parentInd + pi + 1
-                    : parentInd + (pi - values.length - 1) - 1;
+                highOrLow === "high"
+                    ? parentInd + pi
+                    : parentInd - (values.length - 1) + pi;
 
             console.log("PINDEX, PIVOT", parentInd, pivot);
 
@@ -150,30 +150,54 @@ class SortingAlgos {
                 high = [],
                 lower = [],
                 low = [],
-                offset = 0;
+                offset = 0,
+                startInd = parentInd - pi,
+                endInd = parentInd - pi + values.length - 1;
             values.map((v, i) => {
                 if (i === pi) return; // skip pivot
                 //Compare Animation
+                console.log("compare: ", pivot, ":" , parentInd + offset, "//", v, ":" ,startInd + i + offset);
+                aniFrames.push({
+                    action: "compare",
+                    elements: [parentInd + offset, startInd + i + offset],
+                    values: [pivot, v],
+                    stillUnsorted: values,
+                });
                 if (v > pivot && i < pi) {
                     // Move to Right
-                    console.log(`${v} at index ${i} moves right`);
+                    aniFrames.push({
+                        action: "partition",
+                        element: startInd + i + offset,
+                        index: endInd,
+                        stillUnsorted: unsorted,
+                        backwards: true,
+                    })
+                    console.log(`${v} at index ${i} moves right to ${endInd}`);
                     higher.push(v);
-                    offset++;
+                    offset--;
                 } else if (v < pivot && i > pi) {
                     // Move to Left
-                    console.log(`${v} at index ${i} moves left`);
+                    aniFrames.push({
+                        action: "partition",
+                        element: startInd + i + offset,
+                        index: startInd,
+                        stillUnsorted: unsorted,
+                        backwards: false,
+                    })
+                    console.log(`${v} at index ${i} moves left to ${startInd}`);
                     lower.unshift(v);
                     offset++;
                 } else {
-                    i > pi ? high.unshift(v) : low.push(v);
+                    i > pi ? high.push(v) : low.push(v);
                 }
             });
+            parentInd += offset;
             lower = lower.concat(low);
             higher = high.concat(higher);
             unsorted.splice(values.indexOf(pivot), 1);
-            return recursiveSort(lower, "low", parentInd)
+            return recursiveSort(lower, "low", parentInd -1)
                 .concat([pivot])
-                .concat(recursiveSort(higher, "high", parentInd));
+                .concat(recursiveSort(higher, "high", parentInd +1));
         }
 
         function pickPivot(arr) {
@@ -195,7 +219,7 @@ class SortingAlgos {
             return arr[0];
         }
 
-        let solved = recursiveSort(arr, "high", -1);
+        let solved = recursiveSort(arr, "high", 0);
         aniFrames.push({ action: "solved" });
         console.log(solved, aniFrames);
         return [solved, aniFrames];
