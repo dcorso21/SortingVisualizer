@@ -5,10 +5,12 @@ class UI {
                 // e.preventDefault();
                 let img = e.target.cloneNode(true);
                 img.classList.add("drag-num");
+                let h = pullHeight(img);
+                console.log(h);
                 img.id = "tempDrag";
-                img.style.backgroundColor = "ffffff00";
+                // img.style.backgroundColor = "ffffff00";
                 document.body.appendChild(img);
-                e.dataTransfer.setDragImage(img, 25, 25);
+                e.dataTransfer.setDragImage(img, 25, h*5);
                 requestAnimationFrame(() => {
                     (img.style.opacity = "0"), (e.target.style.opacity = "0");
                     dragVal = e.target;
@@ -17,7 +19,9 @@ class UI {
             num.ondragend = (e) => {
                 e.preventDefault();
                 e.target.style.opacity = "100%";
-                document.body.removeChild(document.getElementById("tempDrag"));
+                // console.log(document.getElementById("tempDrag"));
+                let temp = document.getElementById("tempDrag")
+                temp.parentNode.removeChild(temp);
             };
             num.ondragover = (e) => {
                 e.preventDefault();
@@ -80,7 +84,8 @@ class UI {
                         easing: "easeOutElastic(1, .8)",
                         complete: () => {
                             let arr = e.path[1];
-                            UI.updateArr(arr, newArray);
+                            currentNodeArr = newArray;
+                            refreshArrDiv();
                             dragapprove = true; // this function can now be called again
                         },
                     });
@@ -100,5 +105,13 @@ class UI {
             el.style.transform = "none";
             arr.appendChild(el);
         });
+    }
+
+    static enableButtons() {
+        let shuffle = document.getElementById("shuffle"),
+            start = document.getElementById("start");
+        
+        shuffle.onclick = SortingAnimations.shuffleValues;
+        start.onclick = scan;
     }
 }

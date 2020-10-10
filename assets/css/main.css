@@ -11,7 +11,7 @@
     justify-content: center;
     align-items: center;
     font-size: 300%;
-    height: 100vh;
+    /* height: 100vh; */
 }
 
 
@@ -19,35 +19,100 @@
     font-style: italic;
     text-align: center;
     /* line-height: center; */
-    height: 50px;
+    height: 0px;
     width: 50px;
     margin: 20px;
-    border-radius: 50%;
+    border-radius: 20px;
     /* background-color: #6fbd9600; */
-    cursor: pointer;
-    background-color: #00f87c;
-    color: rgba(0, 0, 0, 0.61);
+    cursor: grab;
+    background-color: #dbdbdb;
+    color: rgb(0, 0, 0);
     line-height: 100%;
 }
+
+.num:active{
+    cursor: grabbing;
+}
+
+/* .num:hover{
+    transform: scale(1.5);
+} */
+
 
 .drag-num {
     position: absolute;
     font-size: 300%;
 }
 
-.bars {
-    position: absolute;
+
+.main{
+    height: 100vh;
+    /* width: 100vh; */
     display: flex;
-    /* left: 10%; */
-    bottom: 1px;
+    flex-direction: column;
     justify-content: center;
-    align-items: flex-end;
+    align-items: center;
+    margin-right: 0;
+    padding: 0;
 }
-.bar {
-    /* width: 20px; */
-    /* margin-left: 1px; */
-    border: 1px solid black;
-    /* height: 20px; */
-    /* border: 1px solid black; */
-    background-color: rgb(0, 68, 255);
+
+.primaryBtns{
+    /* margin-top: 40px; */
+    font-size: 120%;
+    display: flex;
+    justify-content: center;
+    align-items:center;
+}
+
+
+#start, #shuffle {
+    height: fit-content;
+    font-style: italic;
+}
+
+#pickAlgo {
+    font-size: 250%;
+    /* margin-top: 30px; */
+}
+
+.mn-btn {
+    padding: 20px;
+    margin: 50px;
+    border-radius: 20px;
+    transition: all .5s;
+    box-shadow: -4px -4px 2px #d4c8b2;
+    cursor: pointer;
+}
+
+.mn-btn:hover{
+    /* background-color: rgb(96, 151, 223); */
+    /* transform: scale(1.05); */
+    box-shadow: 4px 4px 2px #b2d4d4;
+}
+
+
+.dropdown {
+    display: flex;
+    position: relative;
+    float: left;
+    left: 0;
+    bottom: 0;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 20px;
+    /* box-shadow: -4px -4px 2px #d4c8b2; */
+    box-shadow: 4px 4px 2px #b2d4d4;
+    /* align-items: center; */
+}
+
+.algoMenu{
+    position: relative;
+    height: 10vh;
+}
+
+.algo-choice {
+    position: absolute;
+    /* font-size: 130%; */
+    margin: 100px;
+    
 }

@@ -8,20 +8,18 @@ let tl,
     focusOn = "arr";
 
 window.onload = () => {
+    populateArrayDiv(10);
+    makeBars();
     UI.enableDragNumbers();
-    // renderBars(7);
-
-    // scan();
+    UI.enableButtons();
 };
 
 function scan() {
     dragapprove = false;
     tl = anime.timeline();
     currentNodeArr = getCurrentArrOrdered();
-    console.log(currentNodeArr);
     xd = getRelativeX(currentNodeArr[0], currentNodeArr[1]);
     arrVals = getNodeValues(currentNodeArr);
-    console.log(arrVals);
     // let [sortedArr, aniFrames] = SortingAlgos.bubbleSort(arrVals),
     let [sortedArr, aniFrames] = SortingAlgos.selectionSort(arrVals),
         primaryValues = currentNodeArr.slice();
@@ -79,7 +77,6 @@ function arrFromPulledValues(nodeList, values) {
  */
 function getNodeValues(nodeList) {
     let vals = [];
-    console.log(focusOn);
     nodeList.map((node) => {
         if (focusOn === "bars") {
             vals.push(pullHeight(node));
@@ -161,43 +158,48 @@ function shuffle(arr) {
 
 function pullElements() {
     let val = focusOn === "bars" ? "bar" : "num";
-    return [...document.getElementsByClassName(val)];
+    let elements = [...document.getElementsByClassName(val)];
+    return elements;
 }
 
 function makeBars() {
-    nums = pullElements()
+    nums = pullElements();
     nums.map((v, i) => {
-        let h = 50
-        console.log(h);
-        h = Number(v.innerHTML) * h
-        console.log(h);
-        v.style.height = `${h}px`;
-        v.style.borderRadius = "20px";
-        v.style.lineHeight = v.style.height;
-    })
+        anime({
+            targets: v,
+            keyframes: [
+                {
+                    height: 50 * Number(v.innerHTML),
+                    lineHeight: 50 * Number(v.innerHTML),
+                    scale: 1.1,
+                    borderRadius: 10
+                },
+                { scale: 1, duration: 400, borderRadius:20 },
+                // {transformY:0},
+            ],
+            easing: "easeInOutBack",
+            duration: 700,
+            delay: 30 * i,
+            complete: () => {
+                h = Number(v.innerHTML) * 50;
+                v.style.height = `${h}px`;
+                v.style.borderRadius = "20px";
+                v.style.lineHeight = v.style.height;
+            },
+        });
+    });
 }
 
 function populateArrayDiv(numOfBars) {
     let arrFill = [];
-    // let bracket1 = document.createElement("div");
-    // bracket1.className = "bracket";
-    // bracket1.innerHTML = "[";
-    // arrFill.push(bracket1)
-    // let bracket2 = document.createElement("div");
-    // bracket2.className = "bracket";
-    // bracket2.innerHTML = "]";
-    // arrFill.push(bracket2)
     let values = [...Array(numOfBars).keys()];
     values.map((v, i) => {
         let bar = document.createElement("div");
         bar.className = "num";
+        bar.draggable = "true";
         bar.innerHTML = v + 1;
-        arrFill.push(bar)
-    })
+        arrFill.push(bar);
+    });
     currentNodeArr = arrFill;
-    refreshArrDiv()
-    
+    refreshArrDiv();
 }
-
-populateArrayDiv(10)
-makeBars();

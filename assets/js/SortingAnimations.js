@@ -16,7 +16,7 @@ class SortingAnimations {
     static removeColor(targets) {
         tl.add({
             targets: targets,
-            keyframes: [{ backgroundColor: "rgba(255,255,255,0)" }],
+            keyframes: [{ backgroundColor: "#dbdbdb" }],
             duration: 400,
             easing: "linear",
         });
@@ -197,10 +197,10 @@ class SortingAnimations {
 
     static shuffleValues() {
         tl = anime.timeline();
-        // SortingAnimations.removeColor(currentNodeArr);
+        SortingAnimations.removeColor(currentNodeArr);
 
         let arr = [...getCurrentArrOrdered()];
-        values = [...arr];
+        let values = [...arr];
         values = shuffle(values);
 
         currentNodeArr = [...values];
