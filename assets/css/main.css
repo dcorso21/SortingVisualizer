@@ -4,7 +4,6 @@ body, html{
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-
 }
 
 .arr {
@@ -27,19 +26,12 @@ body, html{
     border-radius: 20px;
     cursor: grab;
     background-color: #dbdbdb;
-    /* color: rgb(0, 0, 0); */
     line-height: 100%;
-    /* box-shadow: -3px -3px 2px #dda6b257; */
 }
 
 .num:active, .num:focus{
     cursor: grabbing;
 }
-
-/* .num:hover{
-    transform: scale(1.5);
-} */
-
 
 .drag-num {
     position: absolute;
@@ -47,9 +39,7 @@ body, html{
 }
 
 
-
 .primaryBtns{
-    /* margin-right: 40px; */
     width: 80vw;
     font-size: 120%;
     display: flex;
@@ -67,15 +57,12 @@ body, html{
 
 #pickAlgo {
     color: black;
-    /* border-top-right-radius:20px; */
     background-color: rgb(202, 202, 202);
     padding: 20px;
 
 }
 
 .mn-btn {
-    /* padding: 25px; */
-    /* height: 10vh; */
     transition: all .5s;
     height: 100%;
     cursor: pointer;
@@ -98,22 +85,16 @@ body, html{
     border-radius: 20px;
     transition: all .5s;
     z-index: 50;
-    /* font-size: 125%; */
-    /* opacity: 0; */
-    /* pointer-events: none; */
 }
 
 .algo-choice:hover{
-    background-color: rgb(128, 57, 221);
+    background-color: rgb(127, 182, 161);
 
 }
 
 
 .mn-btn:hover, 
 .dropdown:hover{
-    /* background-color: rgb(96, 151, 223); */
-    /* transform: scale(1.05); */
-    /* box-shadow: 4px 4px 2px #b2d4d4; */
     background-color: rgb(221, 169, 57);
 }
 
