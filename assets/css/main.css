@@ -97,9 +97,10 @@ body, html{
     color: white;
     border-radius: 20px;
     transition: all .5s;
+    z-index: 50;
     /* font-size: 125%; */
-    opacity: 0;
-    pointer-events: none;
+    /* opacity: 0; */
+    /* pointer-events: none; */
 }
 
 .algo-choice:hover{
@@ -149,6 +150,13 @@ nav {
     font-style: italic;
     font-weight: bold;
 }
+.pivot {
+    background-color: rgb(231, 168, 96);
+    border-radius:  10px;
+    padding: 3px;
+    font-style: italic;
+    font-weight: bold;
+}
 
 .explanation {
     display: flex;
@@ -156,7 +164,7 @@ nav {
     align-items: center;
     height: 15vh;
     color: #292929;
-    font-size: 110%;
+    font-size: 100%;
     background-color: rgb(201, 201, 201);
     font-family: 'ABeeZee', sans-serif;
     line-height: 39px;

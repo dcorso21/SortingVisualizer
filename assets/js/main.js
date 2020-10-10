@@ -13,7 +13,7 @@ let tl,
     explanationId = "bubble-explain";
 
 window.onload = () => {
-    populateArrayDiv(5);
+    populateArrayDiv(12);
     makeBars();
     UI.enableDragNumbers();
     UI.enableButtons();
