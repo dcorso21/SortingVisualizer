@@ -27,7 +27,7 @@ function scan() {
     xd = getRelativeX(currentNodeArr[0], currentNodeArr[1]);
     arrVals = getNodeValues(currentNodeArr);
     // let [sortedArr, aniFrames] = SortingAlgos.bubbleSort(arrVals),
-    let [sortedArr, aniFrames] = SortingAlgos.bubbleSort(arrVals),
+    let [sortedArr, aniFrames] = algoFunc(arrVals),
         primaryValues = currentNodeArr.slice();
     aniFrames.map((frame) => {
         actions = {
@@ -178,9 +178,9 @@ function makeBars() {
                     height: 50 * Number(v.innerHTML),
                     lineHeight: 50 * Number(v.innerHTML),
                     scale: 1.1,
-                    borderRadius: 10,
+                    borderRadius: "10px",
                 },
-                { scale: 1, duration: 400, borderRadius: 20 },
+                { scale: 1, duration: 400, borderRadius: "20px" },
                 // {transformY:0},
             ],
             easing: "easeInOutBack",

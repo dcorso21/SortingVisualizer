@@ -187,7 +187,7 @@ class UI {
                         scale: 0.9,
                         // borderRadius: "35%"
                     },
-                    { scale: 1, duration: 400, borderRadius: "50%" },
+                    { scale: 1, duration: 400, borderRadius: "50px" },
                 ],
                 easing: "easeInOutBack",
                 duration: 700,
@@ -204,39 +204,71 @@ class UI {
             picked = document.getElementById("pickAlgo");
 
         picked.onclick = (e) => {
-            tl = anime.timeline()
+            tl = anime.timeline();
             let explainText = document.getElementsByClassName("explain-text");
             tl.add({
                 targets: explainText,
-                keyframes: [
-                    { opacity: 0, translateY: 500 },
-                ],
+                keyframes: [{ opacity: 0, translateY: 500 }],
                 duration: 100,
                 delay: anime.stagger(25),
-            })
-            tl.add({
-                targets: algos,
-                keyframes: [
-                    { opacity: 0, translateY: -40 },
-                    { opacity: 1, translateY: 0 },
-                ],
-                duration: 100,
-                delay: anime.stagger(25),
-                complete: ()=>{
-                    algos.map((e) => {
-                        e.style.pointerEvents = "all";
-                    });
-                }
-            }, 50);
+            });
+            tl.add(
+                {
+                    targets: algos,
+                    keyframes: [
+                        { opacity: 0, translateY: -40 },
+                        { opacity: 1, translateY: 0 },
+                    ],
+                    duration: 100,
+                    delay: anime.stagger(25),
+                    complete: () => {
+                        algos.map((e) => {
+                            e.style.pointerEvents = "all";
+                        });
+                    },
+                },
+                50
+            );
         };
 
         console.log(algos);
         algos.map((a) => {
             a.onclick = (e) => {
+                tl = anime.timeline();
                 picked.innerHTML = a.innerHTML;
                 algo = a.innerHTML;
                 setAlgoInfo();
-                // console.log(algo, algoFunc, explanationId);
+                tl.add({
+                    targets: algos,
+                    keyframes: [
+                        { opacity: 1, translateY: 40 },
+                        { opacity: 0, translateY: 0 },
+                    ],
+                    duration: 100,
+                    // delay: anime.stagger(25),
+                    complete: () => {
+                        algos.map((e) => {
+                            e.style.pointerEvents = "none";
+                        });
+                    },
+                });
+                console.log(explanationId);
+                console.log(document.getElementById(explanationId));
+                tl.add({
+                    targets: document.getElementById(explanationId),
+                    keyframes: [
+                        { translateY: 0 },
+                    ],
+                    duration: 0,
+                });
+                tl.add({
+                    targets: document.getElementById(explanationId),
+                    keyframes: [
+                        { opacity: 0, translateY: -20 },
+                        { opacity: 1, translateY: 0 },
+                    ],
+                    duration: 800,
+                });
             };
         });
     }
