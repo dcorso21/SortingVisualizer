@@ -111,10 +111,11 @@ class SortingAnimations {
             targets: [save[0], save[1]],
             keyframes: [
                 { backgroundColor: "#e07474", duration: 300 },
-                { backgroundColor: "#fff", duration: 300 },
+                // { backgroundColor: "#fff", duration: 300 },
             ],
             easing: "linear",
         });
+        SortingAnimations.removeColor(save)
 
         SortingAnimations.resetAnimX();
         SortingAnimations.syncSwitchAnimate(save, frame.xdMult, update);

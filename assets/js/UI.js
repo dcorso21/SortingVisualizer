@@ -3,14 +3,14 @@ class UI {
         pullElements().map((num) => {
             num.ondragstart = (e) => {
                 // e.preventDefault();
-                let img = e.target.cloneNode(true);
+                let img = e.target.cloneNode(numShow);
                 img.classList.add("drag-num");
                 let h = pullHeight(img);
                 console.log(h);
                 img.id = "tempDrag";
                 // img.style.backgroundColor = "ffffff00";
                 document.body.appendChild(img);
-                e.dataTransfer.setDragImage(img, 25, h*5);
+                e.dataTransfer.setDragImage(img, 25, h * 5);
                 requestAnimationFrame(() => {
                     (img.style.opacity = "0"), (e.target.style.opacity = "0");
                     dragVal = e.target;
@@ -20,7 +20,7 @@ class UI {
                 e.preventDefault();
                 e.target.style.opacity = "100%";
                 // console.log(document.getElementById("tempDrag"));
-                let temp = document.getElementById("tempDrag")
+                let temp = document.getElementById("tempDrag");
                 temp.parentNode.removeChild(temp);
             };
             num.ondragover = (e) => {
@@ -96,7 +96,6 @@ class UI {
             };
         });
     }
-
     static updateArr(arr, newValues) {
         arr = removeAllChildNodes(arr);
         newValues.unshift(brackets[0]);
@@ -106,12 +105,139 @@ class UI {
             arr.appendChild(el);
         });
     }
-
     static enableButtons() {
         let shuffle = document.getElementById("shuffle"),
-            start = document.getElementById("start");
-        
+            start = document.getElementById("start"),
+            togNums = document.getElementById("numShow"),
+            togBars = document.getElementById("barShow");
+
         shuffle.onclick = SortingAnimations.shuffleValues;
         start.onclick = scan;
+        togNums.onclick = UI.toggleNums;
+        togBars.onclick = UI.toggleBars;
+    }
+    static enableDropdown() {
+        let btn = document.getElementById("pickAlgo");
+        btn.onclick = () => {
+            let drop = document.getElementsByClassName("dropdown")[0];
+            console.log(drop);
+
+            if (drop.style.opacity == 1) {
+                drop.style.pointerEvents = "none";
+                anime({
+                    targets: drop,
+                    keyframes: [
+                        {
+                            translateY: -5,
+                            opacity: 0,
+                        },
+                    ],
+                    duration: 300,
+                    easing: "easeInOutBack",
+                });
+                return;
+            }
+            drop.style.pointerEvents = "all";
+            anime({
+                targets: drop,
+                keyframes: [
+                    {
+                        translateY: 5,
+                        opacity: 1,
+                    },
+                ],
+                duration: 300,
+                easing: "easeInOutBack",
+            });
+        };
+    }
+    static toggleNums() {
+        let arr = document.getElementsByClassName("arr")[0];
+        console.log(arr);
+        if (numShow) {
+            anime({
+                targets: arr,
+                keyframes: [
+                    // {color: "rgba(0, 0, 0)"},
+                    { color: "rgba(0, 0, 0, 0)" },
+                ],
+                duration: 400,
+                delay: anime.stagger(100),
+            });
+            numShow = false;
+        } else {
+            anime({
+                targets: arr,
+                color: "rgba(0, 0, 0)",
+                duration: 400,
+                delay: anime.stagger(100),
+            });
+            numShow = true;
+        }
+    }
+    static toggleBars() {
+        nums = pullElements();
+        if (barShow) {
+            anime({
+                targets: nums,
+                keyframes: [
+                    {
+                        height: 50,
+                        lineHeight: 50,
+                        scale: 0.9,
+                        // borderRadius: "35%"
+                    },
+                    { scale: 1, duration: 400, borderRadius: "50%" },
+                ],
+                easing: "easeInOutBack",
+                duration: 700,
+                delay: anime.stagger(100),
+            });
+            barShow = false;
+        } else {
+            makeBars();
+            barShow = true;
+        }
+    }
+    static enableChooseAlgo() {
+        let algos = [...document.getElementsByClassName("algo-choice")],
+            picked = document.getElementById("pickAlgo");
+
+        picked.onclick = (e) => {
+            tl = anime.timeline()
+            let explainText = document.getElementsByClassName("explain-text");
+            tl.add({
+                targets: explainText,
+                keyframes: [
+                    { opacity: 0, translateY: 500 },
+                ],
+                duration: 100,
+                delay: anime.stagger(25),
+            })
+            tl.add({
+                targets: algos,
+                keyframes: [
+                    { opacity: 0, translateY: -40 },
+                    { opacity: 1, translateY: 0 },
+                ],
+                duration: 100,
+                delay: anime.stagger(25),
+                complete: ()=>{
+                    algos.map((e) => {
+                        e.style.pointerEvents = "all";
+                    });
+                }
+            }, 50);
+        };
+
+        console.log(algos);
+        algos.map((a) => {
+            a.onclick = (e) => {
+                picked.innerHTML = a.innerHTML;
+                algo = a.innerHTML;
+                setAlgoInfo();
+                // console.log(algo, algoFunc, explanationId);
+            };
+        });
     }
 }

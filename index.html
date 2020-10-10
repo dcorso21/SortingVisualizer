@@ -4,22 +4,46 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Sorting Visualizer</title>
+        <!-- <link
+            href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;1,400&display=swap"
+            rel="stylesheet"
+        /> -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&display=swap"
+            rel="stylesheet"
+        />
         <link rel="stylesheet" href="assets/css/main.css" />
     </head>
     <body>
-        <div class="main">
+        <nav>
             <div class="primaryBtns">
+                <div id="pickAlgo" class="mn-btn">Bubble Sort</div>
                 <div id="start" class="mn-btn"><div>Start</div></div>
-                <div class="algoMenu">
-                    <div id="pickAlgo" class="mn-btn">Pick Algo</div>
-                    <div class="dropdown">
-                        <div class="algo-choice">Bubble Sort</div>
-                        <div class="algo-choice">Selection Sort</div>
-                        <div class="algo-choice">Insertion Sort</div>
-                    </div>
-                </div>
                 <div id="shuffle" class="mn-btn"><div>Shuffle</div></div>
+                <div id="numShow" class="mn-btn">Toggle Numbers</div>
+                <div id="barShow" class="mn-btn">Toggle Bars</div>
             </div>
+        </nav>
+        <div class="explanation">
+            <div class="algoMenu">
+                <div class="algo-choice">Bubble Sort</div>
+                <div class="algo-choice">Selection Sort</div>
+                <div class="algo-choice">Insertion Sort</div>
+                <div class="algo-choice">Quick Sort</div>
+                <div class="algo-choice">Merge Sort</div>
+                <div class="algo-choice">Tim Sort</div>
+            </div>
+            <div id="bubble-explain" class="explain-text">
+                Bubble Sort <span class="compare">compares</span> each element
+                from left to right to see which item is smaller. If the
+                <span class="less-than"
+                    >right item is smaller than the left</span
+                >, those two items get swapped. The array is
+                <span class="solved">solved</span> when there are no pairs to
+                switch.
+            </div>
+        </div>
+        <div class="main">
             <!-- <div class="explanation">Explanation</div> -->
             <div class="arr">
                 <div class="bracket">[</div>
@@ -29,7 +53,7 @@
     </body>
     <script src="node_modules/animejs/lib/anime.min.js"></script>
     <script src="assets/js/SortingAnimations.js"></script>
-    <script src="assets/js/main.js"></script>
     <script src="assets/js/SortingAlgos.js"></script>
     <script src="assets/js/UI.js"></script>
+    <script src="assets/js/main.js"></script>
 </html>

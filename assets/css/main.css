@@ -1,36 +1,38 @@
-.body{
+body, html{
     height: 100vh;
     width: 100vw;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+
 }
 
 .arr {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: 'Times New Roman', Times, serif;
     font-size: 300%;
-    /* height: 100vh; */
+    color: rgb(0, 0, 0);
+    height: 75vh;
 }
 
 
 .num {
     font-style: italic;
     text-align: center;
-    /* line-height: center; */
     height: 0px;
     width: 50px;
     margin: 20px;
     border-radius: 20px;
-    /* background-color: #6fbd9600; */
     cursor: grab;
     background-color: #dbdbdb;
-    color: rgb(0, 0, 0);
+    /* color: rgb(0, 0, 0); */
     line-height: 100%;
+    /* box-shadow: -3px -3px 2px #dda6b257; */
 }
 
-.num:active{
+.num:active, .num:focus{
     cursor: grabbing;
 }
 
@@ -45,74 +47,122 @@
 }
 
 
-.main{
-    height: 100vh;
-    /* width: 100vh; */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-right: 0;
-    padding: 0;
-}
 
 .primaryBtns{
-    /* margin-top: 40px; */
+    /* margin-right: 40px; */
+    width: 80vw;
     font-size: 120%;
     display: flex;
     justify-content: center;
     align-items:center;
+    font-family: 'ABeeZee', sans-serif;
 }
 
 
-#start, #shuffle {
+#start, #shuffle , #numShow, #barShow{
+    padding: 20px;
     height: fit-content;
     font-style: italic;
 }
 
 #pickAlgo {
-    font-size: 250%;
-    /* margin-top: 30px; */
+    color: black;
+    /* border-top-right-radius:20px; */
+    background-color: rgb(202, 202, 202);
+    padding: 20px;
+
 }
 
 .mn-btn {
-    padding: 20px;
-    margin: 50px;
-    border-radius: 20px;
+    /* padding: 25px; */
+    /* height: 10vh; */
     transition: all .5s;
-    box-shadow: -4px -4px 2px #d4c8b2;
+    height: 100%;
     cursor: pointer;
-}
-
-.mn-btn:hover{
-    /* background-color: rgb(96, 151, 223); */
-    /* transform: scale(1.05); */
-    box-shadow: 4px 4px 2px #b2d4d4;
+    z-index: 80;
 }
 
 
-.dropdown {
+.algoMenu {
+    position: absolute;
     display: flex;
-    position: relative;
-    float: left;
-    left: 0;
-    bottom: 0;
-    flex-direction: column;
-    justify-content: center;
-    border-radius: 20px;
-    /* box-shadow: -4px -4px 2px #d4c8b2; */
-    box-shadow: 4px 4px 2px #b2d4d4;
-    /* align-items: center; */
-}
-
-.algoMenu{
-    position: relative;
-    height: 10vh;
 }
 
 .algo-choice {
-    position: absolute;
-    /* font-size: 130%; */
-    margin: 100px;
-    
+    font-size: 90%;
+    padding: 3px;
+    margin: 24px;
+    cursor: pointer;
+    background-color: #474747;
+    color: white;
+    border-radius: 30px;
+    transition: all .5s;
+    /* font-size: 125%; */
+    opacity: 0;
+    pointer-events: none;
+}
+
+.algo-choice:hover{
+    background-color: rgb(221, 169, 57);
+
+}
+
+
+.mn-btn:hover, 
+.dropdown:hover{
+    /* background-color: rgb(96, 151, 223); */
+    /* transform: scale(1.05); */
+    /* box-shadow: 4px 4px 2px #b2d4d4; */
+    background-color: rgb(221, 169, 57);
+}
+
+
+
+nav {
+    display: flex;
+    /* height: 10vh; */
+    background-color: #474747;
+    justify-content: center;
+    align-items: center;
+    /* background-color: rgb(202, 202, 202); */
+    color: rgb(223, 223, 223);
+}
+
+.compare {
+    background-color: #96d5e8;
+    border-radius:  10px;
+    padding: 3px;
+    font-style: italic;
+    font-weight: bold;
+}
+.less-than {
+    background-color: rgb(221, 108, 104);
+    border-radius:  10px;
+    padding: 3px;
+    font-style: italic;
+    font-weight: bold;
+}
+.solved {
+    background-color: rgb(104, 221, 149);
+    border-radius:  10px;
+    padding: 3px;
+    font-style: italic;
+    font-weight: bold;
+}
+
+.explanation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 15vh;
+    color: #292929;
+    font-size: 110%;
+    background-color: rgb(201, 201, 201);
+    font-family: 'ABeeZee', sans-serif;
+    line-height: 39px;
+}
+
+.explanation div {
+    width: 80%;
+    text-align: center;
 }

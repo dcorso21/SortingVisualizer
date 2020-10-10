@@ -5,13 +5,19 @@ let tl,
     xd,
     dragVal,
     dragapprove = true,
-    focusOn = "arr";
+    barShow = true,
+    numShow = true,
+    focusOn = "arr",
+    algo = "Bubble Sort",
+    algoFunc = SortingAlgos.bubbleSort,
+    explanationId = "bubble-explain";
 
 window.onload = () => {
-    populateArrayDiv(10);
+    populateArrayDiv(5);
     makeBars();
     UI.enableDragNumbers();
     UI.enableButtons();
+    UI.enableChooseAlgo();
 };
 
 function scan() {
@@ -21,7 +27,7 @@ function scan() {
     xd = getRelativeX(currentNodeArr[0], currentNodeArr[1]);
     arrVals = getNodeValues(currentNodeArr);
     // let [sortedArr, aniFrames] = SortingAlgos.bubbleSort(arrVals),
-    let [sortedArr, aniFrames] = SortingAlgos.selectionSort(arrVals),
+    let [sortedArr, aniFrames] = SortingAlgos.bubbleSort(arrVals),
         primaryValues = currentNodeArr.slice();
     aniFrames.map((frame) => {
         actions = {
@@ -172,9 +178,9 @@ function makeBars() {
                     height: 50 * Number(v.innerHTML),
                     lineHeight: 50 * Number(v.innerHTML),
                     scale: 1.1,
-                    borderRadius: 10
+                    borderRadius: 10,
                 },
-                { scale: 1, duration: 400, borderRadius:20 },
+                { scale: 1, duration: 400, borderRadius: 20 },
                 // {transformY:0},
             ],
             easing: "easeInOutBack",
@@ -196,10 +202,36 @@ function populateArrayDiv(numOfBars) {
     values.map((v, i) => {
         let bar = document.createElement("div");
         bar.className = "num";
+        bar.style.height = "50px";
         bar.draggable = "true";
         bar.innerHTML = v + 1;
         arrFill.push(bar);
     });
     currentNodeArr = arrFill;
     refreshArrDiv();
+}
+
+function setAlgoInfo() {
+    switch (algo) {
+        case "Bubble Sort":
+            algoFunc = SortingAlgos.bubbleSort;
+            explanationId = "bubble-explain";
+            break;
+        case "Selection Sort":
+            algoFunc = SortingAlgos.selectionSort;
+            explanationId = "selection-explain";
+            break;
+        case "Insertion Sort":
+            algoFunc = SortingAlgos.insertionSort;
+            explanationId = "insertion-explain";
+            break;
+        case "Quick Sort":
+            algoFunc = SortingAlgos.quickSort;
+            explanationId = "quick-explain";
+            break;
+        case "Merge Sort":
+            algoFunc = SortingAlgos.mergeSort;
+            explanationId = "merge-explain";
+            break;
+    }
 }
