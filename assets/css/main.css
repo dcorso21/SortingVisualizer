@@ -96,6 +96,7 @@ body, html{
 .mn-btn:hover, 
 .dropdown:hover{
     background-color: rgb(221, 169, 57);
+    color: rgb(45, 45, 45);
 }
 
 
