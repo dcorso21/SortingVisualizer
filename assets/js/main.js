@@ -13,10 +13,11 @@ let tl,
     explanationId = "bubble-explain";
 
 window.onload = () => {
-    populateArrayDiv(6);
+    populateArrayDiv(5);
     makeBars();
     UI.enableDragNumbers();
     UI.enableButtons();
+    UI.enableAddSubBars();
     UI.enableChooseAlgo();
 };
 
@@ -163,8 +164,7 @@ function shuffle(arr) {
 }
 
 function pullElements() {
-    let val = focusOn === "bars" ? "bar" : "num";
-    let elements = [...document.getElementsByClassName(val)];
+    let elements = [...document.getElementsByClassName("num")];
     return elements;
 }
 
@@ -194,6 +194,16 @@ function makeBars() {
             },
         });
     });
+}
+
+function addOrSubBars(addOrSub) {
+    let newCount = pullElements().length;
+    if (addOrSub === "add") {
+        newCount++;
+    } else newCount--;
+    populateArrayDiv(newCount);
+    makeBars();
+    UI.enableDragNumbers();
 }
 
 function populateArrayDiv(numOfBars) {

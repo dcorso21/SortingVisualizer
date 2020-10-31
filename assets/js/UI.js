@@ -6,7 +6,6 @@ class UI {
                 let img = e.target.cloneNode(numShow);
                 img.classList.add("drag-num");
                 let h = pullHeight(img);
-                console.log(h);
                 img.id = "tempDrag";
                 // img.style.backgroundColor = "ffffff00";
                 document.body.appendChild(img);
@@ -115,6 +114,31 @@ class UI {
         start.onclick = scan;
         togNums.onclick = UI.toggleNums;
         togBars.onclick = UI.toggleBars;
+    }
+
+    static enableAddSubBars(){
+        let add = document.querySelector('.addBar');
+        let sub = document.querySelector('.subBar');
+        add.onclick = () => {
+            let currentLen = pullElements().length;
+            if (currentLen === 10) return;
+            else if (currentLen === 2) {
+                sub.style.color = 'black';
+            } else if (currentLen >= 9) {
+                add.style.color = 'grey';
+            }
+            addOrSubBars('add');
+        };
+        sub.onclick = () => {
+            let currentLen = pullElements().length;
+            if (currentLen === 2) return;
+            else if (currentLen === 10) {
+                add.style.color = 'black';
+            } else if (currentLen === 3) {
+                sub.style.color = 'grey';
+            }
+            addOrSubBars('sub');
+        };
     }
     static enableDropdown() {
         let btn = document.getElementById("pickAlgo");
