@@ -246,8 +246,11 @@ class SortingAlgos {
             });
             return mergeArrs(arr);
         }
-
-        return recursiveMerge(splitArr(arr));
+        
+        let aniFrames = [],
+            solved = recursiveMerge(splitArr(arr))
+        aniFrames.push({ action: "solved" });
+        return [solved, aniFrames];
     }
     static timSort(arr) {
         let chunkSize = 3;
@@ -294,7 +297,6 @@ class SortingAlgos {
         }
         return recursiveMerge(splitArr(arr));
     }
-
     static sharedMethods() {}
 }
 class RawSortingAlgos {
